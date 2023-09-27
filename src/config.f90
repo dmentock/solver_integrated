@@ -4,6 +4,7 @@
 !--------------------------------------------------------------------------------------------------
 module config
   use IO
+  use tensor_printer
   use misc
   use YAML_parse
   use YAML_types
@@ -39,6 +40,7 @@ subroutine config_init()
 #else
   config_material => parse('material.yaml','material configuration')
 #endif
+
   config_numerics => emptyDict
 #if defined(MESH) || defined(GRID)
   if (allocated(CLI_numericsFile)) &

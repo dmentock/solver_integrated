@@ -8,6 +8,7 @@ module YAML_parse
   use prec
   use misc
   use IO
+  use tensor_printer
   use YAML_types
 #ifdef FYAML
   use system_routines

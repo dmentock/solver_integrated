@@ -5,6 +5,7 @@
 module polynomials
   use prec
   use IO
+  use tensor_printer
   use YAML_parse
   use YAML_types
 

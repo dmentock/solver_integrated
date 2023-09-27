@@ -10,6 +10,7 @@ module crystal
   use prec
   use misc
   use IO
+  use tensor_printer
   use config
   use math
   use rotations

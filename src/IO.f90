@@ -462,6 +462,8 @@ subroutine IO_error(error_ID,ext_msg,label1,ID1,label2,ID2)
       msg = 'invalid character for real:'
     case (113)
       msg = 'invalid character for logical:'
+    case (114)
+      msg = 'cannot decode base64 string:'
 
 !--------------------------------------------------------------------------------------------------
 ! lattice error messages

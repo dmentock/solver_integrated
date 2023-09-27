@@ -10,6 +10,7 @@ module material
   use result
   use math
   use IO
+  use tensor_printer
   use rotations
   use discretization
   use YAML_types

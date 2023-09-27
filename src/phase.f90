@@ -11,6 +11,7 @@ module phase
   use polynomials
   use tables
   use IO
+  use tensor_printer
   use config
   use material
   use result

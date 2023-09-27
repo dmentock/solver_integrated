@@ -1356,14 +1356,18 @@ end function mechanical_F_i
 !--------------------------------------------------------------------------------------------------
 !< @brief Get second Piola-Kirchhoff stress (for use by homogenization).
 !--------------------------------------------------------------------------------------------------
-module function phase_P(co,ce) result(P)
+function phase_P(co,ce) result(P)
 
   integer, intent(in) :: co, ce
   real(pREAL), dimension(3,3) :: P
+
+  print *, ">> phase_P"
   print *, "material_ID_phase(co,ce)", material_ID_phase(co,ce)
   print *, "phase_mechanical_P(material_ID_phase(co,ce))%data", phase_mechanical_P(material_ID_phase(co,ce))%data
   print *, "phase_mechanical_P full", phase_mechanical_P(material_ID_phase(co,ce))%data(1:3,1:3,material_entry_phase(co,ce))
   P = phase_mechanical_P(material_ID_phase(co,ce))%data(1:3,1:3,material_entry_phase(co,ce))
+  call p2r("P", P)
+  print *, "<< phase_P"
 
 end function phase_P
 

@@ -9,6 +9,7 @@
 
 module YAML_types
   use IO
+  use tensor_printer
   use prec
 
   implicit none(type,external)

@@ -9,6 +9,7 @@ module result
   use misc
   use parallelization
   use IO
+  use tensor_printer
   use HDF5_utilities
   use HDF5
 #ifdef PETSC
