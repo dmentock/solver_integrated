@@ -433,6 +433,8 @@ function integrateStress(F,Fp0,Fi0,Delta_t,ph,en) result(broken)
   logical :: error,broken
 
 
+  print *, ">> integrateStress"
+
   broken = .true.
   call plastic_dependentState(ph,en)
 
@@ -565,7 +567,6 @@ function integrateStress(F,Fp0,Fi0,Delta_t,ph,en) result(broken)
   invFp_new = matmul(invFp_current,B)
   call math_invert33(Fp_new,error=error,A=invFp_new)
   if (error) return ! error
-
   phase_mechanical_P(ph)%data(1:3,1:3,en)  = matmul(matmul(F,invFp_new),matmul(S,transpose(invFp_new)))
   phase_mechanical_S(ph)%data(1:3,1:3,en)  = S
   phase_mechanical_Lp(ph)%data(1:3,1:3,en) = Lpguess
@@ -574,7 +575,9 @@ function integrateStress(F,Fp0,Fi0,Delta_t,ph,en) result(broken)
   phase_mechanical_Fi(ph)%data(1:3,1:3,en) = Fi_new
   phase_mechanical_Fe(ph)%data(1:3,1:3,en) = matmul(matmul(F,invFp_new),invFi_new)
   broken = .false.
+  print *, "en phase_mechanical_P(ph)%data(1:3,1:3,en)", en, phase_mechanical_P(ph)%data(1:3,1:3,en)
 
+  print *, "<< integrateStress"
 end function integrateStress
 
 

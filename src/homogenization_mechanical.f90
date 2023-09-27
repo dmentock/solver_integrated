@@ -101,6 +101,7 @@ module subroutine mechanical_partition(subF,ce)
   integer :: co
   real(pREAL), dimension (3,3,homogenization_Nconstituents(material_ID_homogenization(ce))) :: Fs
 
+  print *, ">> mechanical_partition"
 
   chosenHomogenization: select case(mechanical_type(material_ID_homogenization(ce)))
 
@@ -118,6 +119,7 @@ module subroutine mechanical_partition(subF,ce)
   do co = 1,homogenization_Nconstituents(material_ID_homogenization(ce))
     call phase_set_F(Fs(1:3,1:3,co),co,ce)
   end do
+  print *, "<< mechanical_partition"
 
 
 end subroutine mechanical_partition

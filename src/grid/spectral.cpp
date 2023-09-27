@@ -12,16 +12,16 @@ void Spectral::init(int spectral_derivative_id, DiscretizationGrid& grid_){
   std::cout << "\n <<<+-  spectral init  -+>>>" << std::endl;
 
   std::cout << "\n M. Diehl, Diploma Thesis TU München, 2010" << std::endl;
-  std::cout << "https://doi.org/10.13140/2.1.3234.3840" << std::endl;
+  std::cout << " https://doi.org/10.13140/2.1.3234.3840" << std::endl;
 
   std::cout << "\n P. Eisenlohr et al., International Journal of Plasticity 46:37–53, 2013" << std::endl;
-  std::cout << "https://doi.org/10.1016/j.ijplas.2012.09.012" << std::endl;
+  std::cout << " https://doi.org/10.1016/j.ijplas.2012.09.012" << std::endl;
 
   std::cout << "\n P. Shanthraj et al., International Journal of Plasticity 66:31–45, 2015" << std::endl;
-  std::cout << "https://doi.org/10.1016/j.ijplas.2014.02.006" << std::endl;
+  std::cout << " https://doi.org/10.1016/j.ijplas.2014.02.006" << std::endl;
 
   std::cout << "\n P. Shanthraj et al., Handbook of Mechanics of Materials, 2019" << std::endl;
-  std::cout << "https://doi.org/10.1007/978-981-10-6855-3_80" << std::endl;
+  std::cout << " https://doi.org/10.1007/978-981-10-6855-3_80" << std::endl;
 
   wgt = std::pow(grid_.cells[0] * grid_.cells[1] * grid_.cells[2], -1);
 

@@ -228,6 +228,9 @@ subroutine homogenization_mechanical_response(Delta_t,cell_start,cell_end) bind(
   logical, dimension(2) :: &
     doneAndHappy
 
+  print *, ">> homogenization_mechanical_response"
+  print *, "material_entry_homogenization", material_entry_homogenization
+  print *, "material_ID_homogenization", material_ID_homogenization
 
   !$OMP PARALLEL DO PRIVATE(en,ho,co,converged,doneAndHappy)
   do ce = cell_start, cell_end
@@ -236,21 +239,24 @@ subroutine homogenization_mechanical_response(Delta_t,cell_start,cell_end) bind(
     ho = material_ID_homogenization(ce)
 
     call phase_restore(ce,.false.) ! wrong name (is more a forward function)
-
     if (homogState(ho)%sizeState > 0)  homogState(ho)%state(:,en) = homogState(ho)%state0(:,en)
     if (damageState_h(ho)%sizeState > 0) damageState_h(ho)%state(:,en) = damageState_h(ho)%state0(:,en)
+    print *, "homogState(ho)%sizeState state state0", homogState(ho)%sizeState, homogState(ho)%state(:,en), homogState(ho)%state0(:,en)
+
     call damage_partition(ce)
 
     doneAndHappy = [.false.,.true.]
 
     convergenceLooping: do while (.not. (terminallyIll .or. doneAndHappy(1)))
-
+      print *, "ce homogenization_F(1:3,1:3,ce)", ce, homogenization_F(1:3,1:3,ce)
       call mechanical_partition(homogenization_F(1:3,1:3,ce),ce)
       converged = all([(phase_mechanical_constitutive(Delta_t,co,ce),co=1,homogenization_Nconstituents(ho))])
       if (converged) then
+        print *, "converged"
         doneAndHappy = mechanical_updateState(Delta_t,homogenization_F(1:3,1:3,ce),ce)
         converged = all(doneAndHappy)
       else
+        print *, "doneAndHappy"
         doneAndHappy = [.true.,.false.]
       end if
     end do convergenceLooping
@@ -263,7 +269,7 @@ subroutine homogenization_mechanical_response(Delta_t,cell_start,cell_end) bind(
     end if
   end do
   !$OMP END PARALLEL DO
-
+  print *, "<< homogenization_mechanical_response"
 end subroutine homogenization_mechanical_response
 
 

@@ -9,7 +9,7 @@
 #include "mech_base.h"
 
 void MechBase::base_init(){
-  std::cout << "\n <<<+-  spectral mech init  -+>>>" << std::endl;
+  std::cout << "\n <<<+-  mech base init  -+>>>" << std::endl;
 
   if (config.numerics.divergence_correction == 1) {
     double* min_geom_size = std::min_element(grid_.geom_size.begin(), grid_.geom_size.end());

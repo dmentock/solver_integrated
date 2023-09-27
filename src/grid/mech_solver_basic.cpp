@@ -17,12 +17,12 @@
 #include "utilities_tensor.h"
 
 void MechSolverBasic::init() {
-  std::cout << "\n <<<+-  grid_mechanical_spectral_basic init  -+>>>\n";
-  std::cout << "P. Eisenlohr et al., International Journal of Plasticity 46:37–53, 2013\n";
-  std::cout << "https://doi.org/10.1016/j.ijplas.2012.09.012\n\n";
+  std::cout << "\n <<<+-  mech solver basic init  -+>>>\n";
+  std::cout << " P. Eisenlohr et al., International Journal of Plasticity 46:37–53, 2013\n";
+  std::cout << " https://doi.org/10.1016/j.ijplas.2012.09.012\n\n";
 
-  std::cout << "P. Shanthraj et al., International Journal of Plasticity 66:31–45, 2015\n";
-  std::cout << "https://doi.org/10.1016/j.ijplas.2014.02.006\n";
+  std::cout << " P. Shanthraj et al., International Journal of Plasticity 66:31–45, 2015\n";
+  std::cout << " https://doi.org/10.1016/j.ijplas.2014.02.006\n";
 
   base_init();
 

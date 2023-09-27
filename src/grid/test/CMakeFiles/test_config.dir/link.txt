@@ -1,1 +1,0 @@
-/usr/bin/c++ -g -O0 CMakeFiles/test_config.dir/test_config.cpp.o -o test_config   -L/home/snkr/petsc/arch-linux-c-debug/lib  -Wl,-rpath,/home/snkr/petsc/arch-linux-c-debug/lib ../libconfig_c.a /usr/lib/x86_64-linux-gnu/libyaml-cpp.so.0.7.0 /usr/lib/x86_64-linux-gnu/libgtest_main.a /usr/lib/x86_64-linux-gnu/libgtest.a 

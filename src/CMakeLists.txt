@@ -48,7 +48,7 @@ if(PROJECT_NAME STREQUAL "damask-grid")
                           damask_grid_lib)
     set_target_properties(${executable-name} PROPERTIES
       RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-
+    message(${CMAKE_BINARY_DIR} "${CMAKE_BINARY_DIR}")  
     install(TARGETS ${executable-name} RUNTIME DESTINATION bin)
 
     # 

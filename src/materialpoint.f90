@@ -58,6 +58,8 @@ subroutine materialpoint_initBase() bind(C, name="f_materialpoint_initBase")
   call IO_init()
 #if   defined(MESH)
   call FEM_quadrature_init()
+#elif defined(GRID)
+   call base64_init()
 #endif
   call YAML_types_init()
   call YAML_parse_init()
