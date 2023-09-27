@@ -1,0 +1,181 @@
+{
+	"archive" : {},
+	"artifacts" : 
+	[
+		{
+			"path" : "src/grid/libfft.a"
+		}
+	],
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_library",
+			"add_definitions",
+			"include_directories"
+		],
+		"files" : 
+		[
+			"src/grid/CMakeLists.txt",
+			"CMakeLists.txt",
+			"src/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 36,
+				"parent" : 0
+			},
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 51,
+				"parent" : 2
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 50,
+				"parent" : 2
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 143,
+				"parent" : 2
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 49,
+				"parent" : 2
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 36,
+				"parent" : 2
+			},
+			{
+				"file" : 2
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 15,
+				"parent" : 8
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 31,
+				"parent" : 8
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 10,
+				"parent" : 0
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-g -O0"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 3,
+					"define" : "CMAKE_SYSTEM=\"Linux-5.10.16.3-microsoft-standard-WSL2\""
+				},
+				{
+					"backtrace" : 4,
+					"define" : "DAMASKVERSION=\"3.0.0-alpha7-784-g69239661c\""
+				},
+				{
+					"backtrace" : 5,
+					"define" : "FYAML"
+				},
+				{
+					"backtrace" : 6,
+					"define" : "PETSC"
+				},
+				{
+					"backtrace" : 7,
+					"define" : "grid"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 9,
+					"path" : "/home/snkr/petsc/include"
+				},
+				{
+					"backtrace" : 9,
+					"path" : "/home/snkr/petsc/arch-linux-c-debug/include"
+				},
+				{
+					"backtrace" : 10,
+					"path" : "/usr/include/eigen3"
+				},
+				{
+					"backtrace" : 10,
+					"path" : "/home/snkr/DAMASK/src/grid"
+				},
+				{
+					"backtrace" : 11,
+					"path" : "/home/snkr/DAMASK/build/mod_files"
+				}
+			],
+			"language" : "CXX",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		}
+	],
+	"id" : "fft::@36c6a3b0d6b881d634f3",
+	"name" : "fft",
+	"nameOnDisk" : "libfft.a",
+	"paths" : 
+	{
+		"build" : "src/grid",
+		"source" : "src/grid"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/grid/fft.cpp",
+			"sourceGroupIndex" : 0
+		}
+	],
+	"type" : "STATIC_LIBRARY"
+}

@@ -1,0 +1,2 @@
+/usr/bin/ar qc libfft.a CMakeFiles/fft.dir/fft.cpp.o
+/usr/bin/ranlib libfft.a
