@@ -17,7 +17,6 @@ module CLI
   use parallelization
   use system_routines
   use IO
-  use tensor_printer
 
   implicit none(type,external)
   private
@@ -184,6 +183,10 @@ subroutine CLI_init()
     end select
   end do
 
+  materialArg = "material.yaml"
+  geomArg = "examples/grid/20grains16x16x16.vti"
+  loadArg = "examples/grid/tensionX.yaml"
+  
   if (.not. allocated(geomArg))     call IO_error(612,ext_msg='--geom')
   if (.not. allocated(loadArg))     call IO_error(612,ext_msg='--load')
   if (.not. allocated(materialArg)) call IO_error(612,ext_msg='--material')
@@ -201,7 +204,7 @@ subroutine CLI_init()
     call IO_error(630)
   endif
 
-  commandLine = getArg(-1)
+  commandLine = "testcommand"
 
   print'(/,1x,a)',      'Host name: '//getHostName()
   print'(1x,a)',        'User name: '//getUserName()
