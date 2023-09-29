@@ -1,14 +1,10 @@
 cmake_minimum_required(VERSION 3.12.0)
 include(FindPkgConfig REQUIRED)
 
-message("PETSC_DIR: $ENV{PETSC_DIR}")
-message("PETSC_ARCH: $ENV{PETSC_ARCH}")
-
-
 if(DEFINED ENV{PETSC_DIR})
     message("PETSC_DIR:\n$ENV{PETSC_DIR}\n")
 else()
-    message(FATAL_ERROR "PETSc location (PETSC_DIR) is not defined")  
+    message(FATAL_ERROR "PETSc location (PETSC_DIR) is not defined")
 endif()
 
 # Dummy project to determine compiler names and version
@@ -21,19 +17,17 @@ pkg_get_variable(CMAKE_Fortran_COMPILER PETSc fcompiler)
 pkg_get_variable(CMAKE_C_COMPILER PETSc ccompiler)
 
 # Solver determines name of project
-# string(TOUPPER "${DAMASK_SOLVER}" DAMASK_SOLVER)
-# if(DAMASK_SOLVER STREQUAL "GRID")
-#     project(damask-grid HOMEPAGE_URL https://damask.mpie.de LANGUAGES Fortran C CXX)
-# elseif(DAMASK_SOLVER STREQUAL "MESH")
-#     project(damask-mesh HOMEPAGE_URL https://damask.mpie.de LANGUAGES Fortran C)
-# elseif(DAMASK_SOLVER STREQUAL "TEST")
-#     project(damask-test HOMEPAGE_URL https://damask.mpie.de LANGUAGES Fortran C)
-# else()
-#     message(FATAL_ERROR "Invalid solver: DAMASK_SOLVER=${DAMASK_SOLVER}")
-# endif()
-project(damask-grid HOMEPAGE_URL https://damask.mpie.de LANGUAGES Fortran C CXX)
-
-add_definitions("-Dgrid")
+string(TOUPPER "${DAMASK_SOLVER}" DAMASK_SOLVER)
+if(DAMASK_SOLVER STREQUAL "GRID")
+    project(damask-grid HOMEPAGE_URL https://damask.mpie.de LANGUAGES Fortran C CXX)
+elseif(DAMASK_SOLVER STREQUAL "MESH")
+    project(damask-mesh HOMEPAGE_URL https://damask.mpie.de LANGUAGES Fortran C)
+elseif(DAMASK_SOLVER STREQUAL "TEST")
+    project(damask-test HOMEPAGE_URL https://damask.mpie.de LANGUAGES Fortran C)
+else()
+    message(FATAL_ERROR "Invalid solver: DAMASK_SOLVER=${DAMASK_SOLVER}")
+endif()
+add_definitions("-D${DAMASK_SOLVER}")
 
 # EXPERIMENTAL: This might help to detect HDF5 and FFTW3 in the future if PETSc is not aware of them
 set(ENV{PKG_CONFIG_PATH} "$ENV{PETSC_DIR}/$ENV{PETSC_ARCH}/externalpackages:$ENV{PKG_CONFIG_PATH}")
@@ -53,9 +47,6 @@ if(PETSC_VERSION VERSION_EQUAL 3.17.0)
    add_definitions("-DCHKERRQ=PetscCall")
 endif()
 
-set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
-set(CMAKE_C_FLAGS_DEBUG "-g -O0")
-set(CMAKE_BUILD_TYPE Debug)
 if(CMAKE_BUILD_TYPE STREQUAL "")
     set(CMAKE_BUILD_TYPE "RELEASE")
 endif()

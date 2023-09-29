@@ -126,7 +126,8 @@ Tensor<double, 5> Spectral::constitutive_response(Tensor<double, 2> &P_av,
                                                   int rank, 
                                                   std::optional<Eigen::Quaterniond> rot_bc_q) {
 
-  
+  std::cout << "\n ... evaluating constitutive response ......................................" << std::endl;
+
   int n_cells = F.dimension(2) * F.dimension(3) * F.dimension(4);
   Tensor<double, 3> homogenization_F(3, 3, n_cells);
   homogenization_F = F.reshape(Eigen::array<int, 3>({3, 3, n_cells}));

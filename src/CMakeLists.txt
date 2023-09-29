@@ -2,9 +2,6 @@ file(GLOB damask-sources CONFIGURE_DEPENDS *.f90 *.c)
 
 if(PROJECT_NAME STREQUAL "damask-grid")
     message("Making grid")
-    set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
-    set(CMAKE_C_FLAGS_DEBUG "-g -O0")
-    set(CMAKE_BUILD_TYPE Debug)
 
     set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/mod_files)
 
@@ -31,31 +28,27 @@ if(PROJECT_NAME STREQUAL "damask-grid")
     include_directories(${EIGEN3_INCLUDE_DIR}
                         grid)
 
-    add_library(fortran_library OBJECT ${damask-sources})
+    add_library(fortran_library OBJECT ${damask-sources} grid/base64.f90)
+    # target_compile_options(fortran_library PRIVATE ${CMAKE_Fortran_FLAGS_${CMAKE_BUILD_TYPE}})
     target_link_libraries(fortran_library PUBLIC
                           ${PETSC_ARCH_DIR}/lib/libpetsc.so
-                          # ${PETSC_ARCH_DIR}/lib/libfftw3_mpi.a
-                          # ${PETSC_ARCH_DIR}/lib/libmpi.a
                           HDF5::HDF5
                           ${FYAML_LIBRARY}
                           -llapack
                           OpenMP::OpenMP_CXX)
-                    
+    message("CMAKE_Fortran_FLAGS_${CMAKE_BUILD_TYPE}: ${CMAKE_Fortran_FLAGS_${CMAKE_BUILD_TYPE}}")
+
     add_subdirectory(grid)
-    add_executable(${executable-name} ${damask-sources} grid/main.cpp)
+    add_executable(${executable-name} grid/main.cpp)
     target_link_libraries(${executable-name}
                           PUBLIC
+                          fortran_library
                           damask_grid_lib)
+                        
     set_target_properties(${executable-name} PROPERTIES
-      RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-    message(${CMAKE_BINARY_DIR} "${CMAKE_BINARY_DIR}")  
-    install(TARGETS ${executable-name} RUNTIME DESTINATION bin)
+      RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+      install(TARGETS ${executable-name} RUNTIME DESTINATION bin)
 
-    # 
-    # add_library(fortran_library STATIC ${damask-sources})
-    # # target_link_libraries(fortran_library PUBLIC -lz)
-    # add_subdirectory(grid)
-    # install(TARGETS damask_grid RUNTIME DESTINATION bin)
 else()
     if(PROJECT_NAME STREQUAL "damask-mesh")
         set(executable-name "DAMASK_mesh")

@@ -29,6 +29,7 @@ module materialpoint
   use FEM_quadrature
   use discretization_mesh
 #elif defined(GRID)
+  use base64
   use iso_c_binding
 #endif
 

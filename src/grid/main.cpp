@@ -33,9 +33,9 @@ int main(int argc, char *argv[])
   //                               node_coords0.data(), node_coords0.dimension(1),
   //                               shared_nodes_begin);
   Config config;
-  config.numerics = config.parse_numerics_yaml("../examples/grid/numerics.yaml");
-  config.load_steps = config.parse_load_yaml("../examples/grid/tensionX.yaml", config.fields);
-  config.vti_file = config.read_file("../examples/grid/test_2_2x1x1.vti");
+  config.numerics = config.parse_numerics_yaml("examples/grid/numerics.yaml");
+  config.load_steps = config.parse_load_yaml("examples/grid/tensionX.yaml", config.fields);
+  config.vti_file = config.read_file("examples/grid/test_2_2x1x1.vti");
 
   cout << "oke1 " << config.vti_file << endl;
 

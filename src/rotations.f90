@@ -286,17 +286,31 @@ end function rotVector
 !> @brief Rotate a rank-2 tensor passively (default) or actively.
 !> @details: Rotation is based on rotation matrix
 !--------------------------------------------------------------------------------------------------
-pure function rotTensor2(self,T,active) result(tRot)
+ function rotTensor2(self,T,active) result(tRot)
 
-  real(pREAL),                 dimension(3,3) :: tRot
+  real(pREAL),                 dimension(3,3) :: tRot, a, b, c
   class(tRotation), intent(in)                :: self
   real(pREAL),     intent(in), dimension(3,3) :: T
   logical,         intent(in), optional       :: active
 
 
+  a = matmul(transpose(self%asMatrix()),T)
+  b = self%asMatrix()
+  c = matmul(a, b)
+  print *, "a", a
+  print *, "b", b
+  print *, "c", c
+  ! print *, "self%asMatrix", self%asMatrix()
+  ! print *, "T", T
+  ! print *, 1, matmul(matmul(transpose(self%asMatrix()),T),self%asMatrix())
+  ! print *, 11, matmul(transpose(self%asMatrix()),T)
+  ! print *, 12, transpose(self%asMatrix())
+  ! print *, 2, matmul(matmul(self%asMatrix(),T),transpose(self%asMatrix()))
+  ! print *, 3, misc_optional(active,.false.)
   tRot = merge(matmul(matmul(transpose(self%asMatrix()),T),self%asMatrix()), &
                matmul(matmul(self%asMatrix(),T),transpose(self%asMatrix())), &
                misc_optional(active,.false.))
+  print *, "tRot", tRot
 
 end function rotTensor2
 

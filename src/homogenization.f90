@@ -228,11 +228,9 @@ subroutine homogenization_mechanical_response(Delta_t,cell_start,cell_end) bind(
   logical, dimension(2) :: &
     doneAndHappy
 
-  print *, ">> homogenization_mechanical_response"
+  print *, ">> homogenization_mechanical_response", cell_start,cell_end
   print *, "material_entry_homogenization", material_entry_homogenization
   print *, "material_ID_homogenization", material_ID_homogenization
-
-  !$OMP PARALLEL DO PRIVATE(en,ho,co,converged,doneAndHappy)
   do ce = cell_start, cell_end
 
     en = material_entry_homogenization(ce)
@@ -241,12 +239,12 @@ subroutine homogenization_mechanical_response(Delta_t,cell_start,cell_end) bind(
     call phase_restore(ce,.false.) ! wrong name (is more a forward function)
     if (homogState(ho)%sizeState > 0)  homogState(ho)%state(:,en) = homogState(ho)%state0(:,en)
     if (damageState_h(ho)%sizeState > 0) damageState_h(ho)%state(:,en) = damageState_h(ho)%state0(:,en)
-    print *, "homogState(ho)%sizeState state state0", homogState(ho)%sizeState, homogState(ho)%state(:,en), homogState(ho)%state0(:,en)
+    print *, "ce homogState(ho)%sizeState state state0", ce, homogState(ho)%sizeState, homogState(ho)%state(:,en), homogState(ho)%state0(:,en)
 
     call damage_partition(ce)
-
+    print *, "after"
     doneAndHappy = [.false.,.true.]
-
+    print *, "hah", terminallyIll, doneAndHappy(1)
     convergenceLooping: do while (.not. (terminallyIll .or. doneAndHappy(1)))
       print *, "ce homogenization_F(1:3,1:3,ce)", ce, homogenization_F(1:3,1:3,ce)
       call mechanical_partition(homogenization_F(1:3,1:3,ce),ce)
@@ -259,16 +257,16 @@ subroutine homogenization_mechanical_response(Delta_t,cell_start,cell_end) bind(
         print *, "doneAndHappy"
         doneAndHappy = [.true.,.false.]
       end if
+      print *, "cloop end"
     end do convergenceLooping
 
     converged = converged .and. all([(phase_damage_constitutive(Delta_t,co,ce),co=1,homogenization_Nconstituents(ho))])
-
+    print *, "conv", converged
     if (.not. converged) then
       if (.not. terminallyIll) print*, ' Cell ', ce, ' terminally ill'
       terminallyIll = .true.
     end if
   end do
-  !$OMP END PARALLEL DO
   print *, "<< homogenization_mechanical_response"
 end subroutine homogenization_mechanical_response
 

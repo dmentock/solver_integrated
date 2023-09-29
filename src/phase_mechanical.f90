@@ -248,6 +248,9 @@ module subroutine mechanical_init(phases, num_mech)
   do ce = 1, size(material_ID_phase,2)
     ma = discretization_materialAt((ce-1)/discretization_nIPs+1)
     do co = 1,homogenization_Nconstituents(material_ID_homogenization(ce))
+      print *, "material_O_0(ma)%data(co)", material_O_0(ma)%data(co)
+      print *, "material_V_e_0(ma)%data(1:3,1:3,co)", material_V_e_0(ma)%data(1:3,1:3,co)
+      print *, "math_inv33(material_V_e_0(ma)%data(1:3,1:3,co))", math_inv33(material_V_e_0(ma)%data(1:3,1:3,co))
       ph = material_ID_phase(co,ce)
       en = material_entry_phase(co,ce)
       phase_mechanical_F(ph)%data(1:3,1:3,en)  = math_I3
@@ -257,7 +260,7 @@ module subroutine mechanical_init(phases, num_mech)
       phase_mechanical_Fi(ph)%data(1:3,1:3,en) = material_O_0(ma)%data(co)%rotate(math_inv33(material_V_e_0(ma)%data(1:3,1:3,co)))
     end do
   end do
-
+  print *, "phase_mechanical_Fi(ph)%data", phase_mechanical_Fi(ph)%data
   do ph = 1, phases%length
     phase_mechanical_F0(ph)%data  = phase_mechanical_F(ph)%data
     phase_mechanical_Fp0(ph)%data = phase_mechanical_Fp(ph)%data
@@ -383,42 +386,42 @@ function integrateStress(F,Fp0,Fi0,Delta_t,ph,en) result(broken)
   real(pREAL),                 intent(in) :: Delta_t
   integer, intent(in) :: ph, en
 
-  real(pREAL), dimension(3,3)::       Fp_new, &                                                     ! plastic deformation gradient at end of timestep
-                                      invFp_new, &                                                  ! inverse of Fp_new
-                                      invFp_current, &                                              ! inverse of Fp_current
-                                      Lpguess, &                                                    ! current guess for plastic velocity gradient
-                                      Lpguess_old, &                                                ! known last good guess for plastic velocity gradient
-                                      Lp_constitutive, &                                            ! plastic velocity gradient resulting from constitutive law
-                                      residuumLp, &                                                 ! current residuum of plastic velocity gradient
-                                      residuumLp_old, &                                             ! last residuum of plastic velocity gradient
-                                      deltaLp, &                                                    ! direction of next guess
-                                      Fi_new, &                                                     ! gradient of intermediate deformation stages
-                                      invFi_new, &
-                                      invFi_current, &                                              ! inverse of Fi_current
-                                      Liguess, &                                                    ! current guess for intermediate velocity gradient
-                                      Liguess_old, &                                                ! known last good guess for intermediate velocity gradient
-                                      Li_constitutive, &                                            ! intermediate velocity gradient resulting from constitutive law
-                                      residuumLi, &                                                 ! current residuum of intermediate velocity gradient
-                                      residuumLi_old, &                                             ! last residuum of intermediate velocity gradient
-                                      deltaLi, &                                                    ! direction of next guess
-                                      Fe, &                                                         ! elastic deformation gradient
-                                      S, &                                                          ! 2nd Piola-Kirchhoff Stress in plastic (lattice) configuration
-                                      A, &
-                                      B, &
-                                      temp_33
-  real(pREAL), dimension(9) ::        temp_9                                                        ! needed for matrix inversion by LAPACK
+  real(pREAL), dimension(3,3)::       Fp_new = 0.0_pReal, &                                                     ! plastic deformation gradient at end of timestep
+                                      invFp_new = 0.0_pReal, &                                                  ! inverse of Fp_new
+                                      invFp_current = 0.0_pReal, &                                              ! inverse of Fp_current
+                                      Lpguess = 0.0_pReal, &                                                    ! current guess for plastic velocity gradient
+                                      Lpguess_old = 0.0_pReal, &                                                ! known last good guess for plastic velocity gradient
+                                      Lp_constitutive = 0.0_pReal, &                                            ! plastic velocity gradient resulting from constitutive law
+                                      residuumLp = 0.0_pReal, &                                                 ! current residuum of plastic velocity gradient
+                                      residuumLp_old = 0.0_pReal, &                                             ! last residuum of plastic velocity gradient
+                                      deltaLp = 0.0_pReal, &                                                    ! direction of next guess
+                                      Fi_new = 0.0_pReal, &                                                     ! gradient of intermediate deformation stages
+                                      invFi_new = 0.0_pReal, &
+                                      invFi_current = 0.0_pReal, &                                              ! inverse of Fi_current
+                                      Liguess = 0.0_pReal, &                                                    ! current guess for intermediate velocity gradient
+                                      Liguess_old = 0.0_pReal, &                                                ! known last good guess for intermediate velocity gradient
+                                      Li_constitutive = 0.0_pReal, &                                            ! intermediate velocity gradient resulting from constitutive law
+                                      residuumLi = 0.0_pReal, &                                                 ! current residuum of intermediate velocity gradient
+                                      residuumLi_old = 0.0_pReal, &                                             ! last residuum of intermediate velocity gradient
+                                      deltaLi = 0.0_pReal, &                                                    ! direction of next guess
+                                      Fe = 0.0_pReal, &                                                         ! elastic deformation gradient
+                                      S = 0.0_pReal, &                                                          ! 2nd Piola-Kirchhoff Stress in plastic (lattice) configuration
+                                      A = 0.0_pReal, &
+                                      B = 0.0_pReal, &
+                                      temp_33 = 0.0_pReal
+  real(pREAL), dimension(9) ::        temp_9 = 0.0_pReal                                                        ! needed for matrix inversion by LAPACK
   integer,     dimension(9) ::        devNull_9                                                     ! needed for matrix inversion by LAPACK
-  real(pREAL), dimension(9,9) ::      dRLp_dLp, &                                                   ! partial derivative of residuum (Jacobian for Newton-Raphson scheme)
+  real(pREAL), dimension(9,9) ::      dRLp_dLp = 0.0_pReal, &                                                   ! partial derivative of residuum (Jacobian for Newton-Raphson scheme)
                                       dRLi_dLi                                                      ! partial derivative of residuumI (Jacobian for Newton-Raphson scheme)
-  real(pREAL), dimension(3,3,3,3)::   dS_dFe, &                                                     ! partial derivative of 2nd Piola-Kirchhoff stress
-                                      dS_dFi, &
-                                      dFe_dLp, &                                                    ! partial derivative of elastic deformation gradient
-                                      dFe_dLi, &
-                                      dFi_dLi, &
-                                      dLp_dFi, &
-                                      dLi_dFi, &
-                                      dLp_dS, &
-                                      dLi_dS
+  real(pREAL), dimension(3,3,3,3)::   dS_dFe = 0.0_pReal, &                                                     ! partial derivative of 2nd Piola-Kirchhoff stress
+                                      dS_dFi = 0.0_pReal, &
+                                      dFe_dLp = 0.0_pReal, &                                                    ! partial derivative of elastic deformation gradient
+                                      dFe_dLi = 0.0_pReal, &
+                                      dFi_dLi = 0.0_pReal, &
+                                      dLp_dFi = 0.0_pReal, &
+                                      dLi_dFi = 0.0_pReal, &
+                                      dLp_dS = 0.0_pReal, &
+                                      dLi_dS = 0.0_pReal
   real(pREAL)                         steplengthLp, &
                                       steplengthLi, &
                                       atol_Lp, &
@@ -429,11 +432,13 @@ function integrateStress(F,Fp0,Fi0,Delta_t,ph,en) result(broken)
                                       o, &
                                       p, &
                                       jacoCounterLp, &
-                                      jacoCounterLi                                                 ! counters to check for Jacobian update
+                                      jacoCounterLi                                                ! counters to check for Jacobian update
+
   logical :: error,broken
 
 
-  print *, ">> integrateStress"
+  print *, ">> integrateStresss"
+
 
   broken = .true.
   call plastic_dependentState(ph,en)
@@ -443,6 +448,7 @@ function integrateStress(F,Fp0,Fi0,Delta_t,ph,en) result(broken)
 
   call math_invert33(invFp_current,error=error,A=Fp0)
   if (error) return ! error
+  print *, "Fi0", Fi0
   call math_invert33(invFi_current,error=error,A=Fi0)
   if (error) return ! error
 
@@ -457,8 +463,11 @@ function integrateStress(F,Fp0,Fi0,Delta_t,ph,en) result(broken)
   LiLoop: do
     NiterationStressLi = NiterationStressLi + 1
     if (NiterationStressLi>num%nStress_Li) return ! error
-
+    print *, "invFi_current", invFi_current
+    print *, "Delta_t",  Delta_t
+    print *, "Liguess",  Liguess
     invFi_new = matmul(invFi_current,math_I3 - Delta_t*Liguess)
+    print *, "invFi_new", invFi_new
     Fi_new    = math_inv33(invFi_new)
 
     jacoCounterLp  = 0
@@ -472,6 +481,8 @@ function integrateStress(F,Fp0,Fi0,Delta_t,ph,en) result(broken)
       if (NiterationStressLp>num%nStress_Lp) return ! error
 
       B  = math_I3 - Delta_t*Lpguess
+      print *, "AAA", A
+      print *, "BBB", B
       Fe = matmul(matmul(A,B), invFi_new)
       call phase_hooke_SandItsTangents(S, dS_dFe, dS_dFi, &
                                         Fe, Fi_new, ph, en)
@@ -567,6 +578,9 @@ function integrateStress(F,Fp0,Fi0,Delta_t,ph,en) result(broken)
   invFp_new = matmul(invFp_current,B)
   call math_invert33(Fp_new,error=error,A=invFp_new)
   if (error) return ! error
+  print *, "F", F
+  print *, "invFp_new", invFp_new
+  print *, "SSS", S
   phase_mechanical_P(ph)%data(1:3,1:3,en)  = matmul(matmul(F,invFp_new),matmul(S,transpose(invFp_new)))
   phase_mechanical_S(ph)%data(1:3,1:3,en)  = S
   phase_mechanical_Lp(ph)%data(1:3,1:3,en) = Lpguess
@@ -576,6 +590,56 @@ function integrateStress(F,Fp0,Fi0,Delta_t,ph,en) result(broken)
   phase_mechanical_Fe(ph)%data(1:3,1:3,en) = matmul(matmul(F,invFp_new),invFi_new)
   broken = .false.
   print *, "en phase_mechanical_P(ph)%data(1:3,1:3,en)", en, phase_mechanical_P(ph)%data(1:3,1:3,en)
+
+  ! 3x3 Matrix Variables
+  print *, 'F: ', F
+  print *, 'Fp0: ', Fp0
+  print *, 'Fi0: ', Fi0
+  print *, 'Fp_new: ', Fp_new
+  print *, 'invFp_new: ', invFp_new
+  print *, 'invFp_current: ', invFp_current
+  print *, 'Lpguess: ', Lpguess
+  print *, 'Lpguess_old: ', Lpguess_old
+  print *, 'Lp_constitutive: ', Lp_constitutive
+  print *, 'residuumLp: ', residuumLp
+  print *, 'residuumLp_old: ', residuumLp_old
+  print *, 'deltaLp: ', deltaLp
+  print *, 'Fi_new: ', Fi_new
+  print *, 'invFi_new: ', invFi_new
+  print *, 'invFi_current: ', invFi_current
+  print *, 'Liguess: ', Liguess
+  print *, 'Liguess_old: ', Liguess_old
+  print *, 'Li_constitutive: ', Li_constitutive
+  print *, 'residuumLi: ', residuumLi
+  print *, 'residuumLi_old: ', residuumLi_old
+  print *, 'deltaLi: ', deltaLi
+  print *, 'Fe: ', Fe
+  print *, 'S: ', S
+  print *, 'A: ', A
+  print *, 'B: ', B
+  print *, 'temp_33: ', temp_33
+
+  ! 9x1 Vector Variables
+  print *, 'temp_9: ', temp_9
+  print *, 'devNull_9: ', devNull_9
+
+  ! 9x9 Matrix Variables
+  print *, 'dRLp_dLp: ', dRLp_dLp
+  print *, 'dRLi_dLi: ', dRLi_dLi
+
+  ! 4-Dimensional Array Variables
+  print *, 'dS_dFe: ', dS_dFe
+  print *, 'dS_dFi: ', dS_dFi
+  print *, 'dFe_dLp: ', dFe_dLp
+  print *, 'dFe_dLi: ', dFe_dLi
+  print *, 'dFi_dLi: ', dFi_dLi
+  print *, 'dLp_dFi: ', dLp_dFi
+  print *, 'dLi_dFi: ', dLi_dFi
+  print *, 'dLp_dS: ', dLp_dS
+  print *, 'dLi_dS: ', dLi_dS
+
+
+
 
   print *, "<< integrateStress"
 end function integrateStress
@@ -620,7 +684,7 @@ function integrateStateFPI(F_0,F,Fp0,Fi0,state0,Delta_t,ph,en) result(broken)
 
     dotState_last(1:sizeDotState,2) = merge(dotState_last(1:sizeDotState,1),0.0_pREAL, nIterationState > 1)
     dotState_last(1:sizeDotState,1) = dotState
-
+    print *, "broken1", Fi0
     broken = integrateStress(F,Fp0,Fi0,Delta_t,ph,en)
     if (broken) exit iteration
 
@@ -704,6 +768,7 @@ function integrateStateEuler(F_0,F,Fp0,Fi0,state0,Delta_t,ph,en) result(broken)
 
   broken = plastic_deltaState(ph,en)
   if (broken) return
+  print *, "broken2", Fi0
 
   broken = integrateStress(F,Fp0,Fi0,Delta_t,ph,en)
 
@@ -747,6 +812,7 @@ function integrateStateAdaptiveEuler(F_0,F,Fp0,Fi0,state0,Delta_t,ph,en) result(
 
   broken = plastic_deltaState(ph,en)
   if (broken) return
+  print *, "broken3", Fi0
 
   broken = integrateStress(F,Fp0,Fi0,Delta_t,ph,en)
   if (broken) return
@@ -876,6 +942,7 @@ function integrateStateRK(F_0,F,Fp0,Fi0,state0,Delta_t,ph,en,A,B,C,DB) result(br
 #else
     plasticState(ph)%state(1:sizeDotState,en) = IEEE_FMA(dotState,Delta_t,state0)
 #endif
+    print *, "broken4", Fi0
 
     broken = integrateStress(F_0+(F-F_0)*Delta_t*C(stage),Fp0,Fi0,Delta_t*C(stage), ph,en)
     if (broken) exit
@@ -904,6 +971,7 @@ function integrateStateRK(F_0,F,Fp0,Fi0,state0,Delta_t,ph,en,A,B,C,DB) result(br
 
   broken = plastic_deltaState(ph,en)
   if (broken) return
+  print *, "broken5", Fi0
 
   broken = integrateStress(F,Fp0,Fi0,Delta_t,ph,en)
 
@@ -990,8 +1058,9 @@ module subroutine mechanical_forward()
 
   integer :: ph
 
-
+  print *, ">> mechanical_forward"
   do ph = 1, size(plasticState)
+    print *, "phase_mechanical_Fi(ph)", phase_mechanical_Fi(ph)%data
     phase_mechanical_Fi0(ph) = phase_mechanical_Fi(ph)
     phase_mechanical_Fp0(ph) = phase_mechanical_Fp(ph)
     phase_mechanical_F0(ph)  = phase_mechanical_F(ph)
@@ -1000,6 +1069,7 @@ module subroutine mechanical_forward()
     phase_mechanical_S0(ph)  = phase_mechanical_S(ph)
     plasticState(ph)%state0 = plasticState(ph)%state
   end do
+  print *, "<< mechanical_forward"
 
 end subroutine mechanical_forward
 
@@ -1039,6 +1109,7 @@ module function phase_mechanical_constitutive(Delta_t,co,ce) result(converged_)
   Lp0 = phase_mechanical_Lp0(ph)%data(1:3,1:3,en)
   Fp0 = phase_mechanical_Fp0(ph)%data(1:3,1:3,en)
   Fi0 = phase_mechanical_Fi0(ph)%data(1:3,1:3,en)
+  print *, "phase_mechanical_Fi0(ph)%data(1:3,1:3,en)", phase_mechanical_Fi0(ph)%data(1:3,1:3,en)
   F0  = phase_mechanical_F0(ph)%data(1:3,1:3,en)
   stepFrac = 0.0_pREAL
   todo = .true.
