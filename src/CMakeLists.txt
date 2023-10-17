@@ -1,10 +1,11 @@
 file(GLOB damask-sources CONFIGURE_DEPENDS *.f90 *.c)
 
+message(STATUS "Fortran compile flags: ${CMAKE_Fortran_FLAGS}")
+message(STATUS "C++ compile flags: ${CMAKE_CXX_FLAGS}")
+
+
 if(PROJECT_NAME STREQUAL "damask-grid")
     message("Making grid")
-
-    set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/mod_files)
-
     set(executable-name "DAMASK_grid")
     # set(LDFLAGS "-Wl,--copy-dt-needed-entries")
     set(FFTW_LIBRARIES "$ENV{PETSC_DIR}/$ENV{PETSC_ARCH}/lib/libfftw3_mpi.a" "$ENV{PETSC_DIR}/$ENV{PETSC_ARCH}/lib/libfftw3.a")
@@ -44,9 +45,8 @@ if(PROJECT_NAME STREQUAL "damask-grid")
                           PUBLIC
                           fortran_library
                           damask_grid_lib)
-                        
-    set_target_properties(${executable-name} PROPERTIES
-      RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+    # set_target_properties(${executable-name} PROPERTIES
+    #   RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
       install(TARGETS ${executable-name} RUNTIME DESTINATION bin)
 
 else()

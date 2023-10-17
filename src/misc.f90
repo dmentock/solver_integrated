@@ -117,7 +117,7 @@ end function misc_optional_str
 !> @brief Add prefix to options in string.
 !> @detail An option starts with a dash followed by at least one letter.
 !--------------------------------------------------------------------------------------------------
-pure function misc_prefixOptions(string,prefix) result(prefixed)
+function misc_prefixOptions(string,prefix) result(prefixed)
 
   character(len=*), intent(in)  :: string,prefix
   character(len=:), allocatable :: prefixed

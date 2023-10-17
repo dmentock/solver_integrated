@@ -1,6 +1,10 @@
 project(grid)
 cmake_minimum_required(VERSION 3.10)
 
+message("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+
+
+
  # TODO: switch entirely to yaml-cpp
 
 # set(HDF5_ROOT "${PETSC_ARCH_DIR}")
@@ -9,10 +13,23 @@ cmake_minimum_required(VERSION 3.10)
 # message("FortranFortranFortrantranFortntranFortntranFortntranFortntranFortntranFortntranFortntranFortntranFortran\n${ZLIB_LIBRARIES}")
 include_directories(${CMAKE_Fortran_MODULE_DIRECTORY})
 
+get_target_property(FORTRAN_LIBRARY_DIR fortran_library BINARY_DIR)
+
 add_library(base64 base64.f90)
+target_include_directories(base64 PUBLIC ${FORTRAN_LIBRARY_DIR})
+target_link_libraries(base64 PUBLIC fortran_library)
 
 add_library(zlib zlib.f90)
-target_link_libraries(zlib PUBLIC -lz)
+target_include_directories(zlib PUBLIC ${FORTRAN_LIBRARY_DIR})
+
+message("fortran_library is built in ${FORTRAN_LIBRARY_DIR}")
+
+get_target_property(ZLIB_INCLUDE_DIRS zlib INCLUDE_DIRECTORIES)
+message("Include directories for zlib: ${ZLIB_INCLUDE_DIRS}")
+
+target_link_libraries(zlib PUBLIC fortran_library -lz)
+
+
 
 add_library(VTI VTI.f90)
 target_link_libraries(VTI 
@@ -76,8 +93,6 @@ target_link_libraries(damask_grid_lib
                       ${PETSC_ARCH_DIR}/lib/libfftw3_mpi.a
                       # ${PETSC_ARCH_DIR}/lib/libfftw3.a
                       -lfftw3
-                      -llapack
                       OpenMP::OpenMP_CXX)
 
-
-add_subdirectory(test)
+# add_subdirectory(test)

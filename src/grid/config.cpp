@@ -44,14 +44,14 @@ Config::NumGridParams Config::parse_numerics_yaml(std::string yamlFilePath) {
 
   for (const auto& key_ : gridNode) {
     std::string key = key_.first.as<std::string>();
-		if (key == "itmin") {
+		if (key == "N_iter_min") {
 				int itmin = key_.second.as<int>();
 				if (itmin < 1)  {
 					errors += "itmin must be >= 1\n";
 				} else {
 					numerics.itmin = itmin;
 				}
-		} else if (key == "itmax") {
+		} else if (key == "N_iter_max") {
 				int itmax = key_.second.as<int>();
 				if (itmax <= 1)  {
 					errors += "itmax must be > 1\n";
@@ -263,6 +263,7 @@ std::vector<Config::LoadStep> Config::parse_load_yaml(std::string yamlFilePath,
     YAML::Node discretizationNode = loadstepNode["discretization"];
     load_step.t = discretizationNode["t"].as<int>();
     load_step.N = discretizationNode["N"].as<int>();
+    n_total_load_steps += load_step.N;
     if (discretizationNode["r"].IsDefined()) {
       load_step.r = discretizationNode["r"].as<int>();
     }

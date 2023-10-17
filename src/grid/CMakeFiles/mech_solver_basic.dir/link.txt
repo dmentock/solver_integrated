@@ -1,0 +1,2 @@
+/usr/bin/ar qc libmech_solver_basic.a CMakeFiles/mech_solver_basic.dir/mech_solver_basic.cpp.o
+/usr/bin/ranlib libmech_solver_basic.a

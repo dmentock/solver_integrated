@@ -18,6 +18,63 @@ auto tensor_sum(const TensorType& tensor) -> typename TensorType::Scalar {
   return sum;
 }
 
+template <typename T, int rows, int cols>
+Eigen::Matrix<T, rows, cols> _merge(
+    const Eigen::Matrix<T, rows, cols>& A,
+    const Eigen::Matrix<T, rows, cols>& B,
+    const Eigen::Matrix<bool, rows, cols>& mask)
+{
+    Eigen::Matrix<T, rows, cols> result;
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+            result(i, j) = mask(i, j) ? A(i, j) : B(i, j);
+        }
+    }
+    return result;
+}
+
+template <typename T, int rows, int cols>
+Eigen::Matrix<T, rows, cols> merge(
+    const Eigen::Matrix<T, rows, cols>& A,
+    T scalar,
+    const Eigen::Matrix<bool, rows, cols>& mask)
+{
+    Eigen::Matrix<T, rows, cols> B = Eigen::Matrix<T, rows, cols>::Constant(rows, cols, scalar);
+    return _merge(A, B, mask);
+}
+
+template <typename T, int rows, int cols>
+Eigen::Matrix<T, rows, cols> merge(
+    T scalar,
+    const Eigen::Matrix<T, rows, cols>& B,
+    const Eigen::Matrix<bool, rows, cols>& mask)
+{
+    Eigen::Matrix<T, rows, cols> A = Eigen::Matrix<T, rows, cols>::Constant(rows, cols, scalar);
+    return _merge(A, B, mask);
+}
+
+template <typename T, int rows, int cols>
+Eigen::Matrix<T, rows, cols> merge(
+    const Eigen::Matrix<T, rows, cols>& A,
+    T scalar,
+    bool mask_values)
+{
+    Eigen::Matrix<T, rows, cols> B = Eigen::Matrix<T, rows, cols>::Constant(rows, cols, scalar);
+    Eigen::Matrix<bool, rows, cols> mask = Eigen::Matrix<bool, rows, cols>::Constant(rows, cols, mask_values);
+    return _merge(A, B, mask);
+}
+
+template <typename T, int rows, int cols>
+Eigen::Matrix<T, rows, cols> merge(
+    T scalar,
+    const Eigen::Matrix<T, rows, cols>& B,
+    bool mask_values)
+{
+    Eigen::Matrix<T, rows, cols> A = Eigen::Matrix<T, rows, cols>::Constant(rows, cols, scalar);
+    Eigen::Matrix<bool, rows, cols> mask = Eigen::Matrix<bool, rows, cols>::Constant(rows, cols, mask_values);
+    return _merge(A, B, mask);
+}
+
 // element-wise equality of two tensors
 template <typename T1, typename T2>
 bool tensor_eq(const T1& tensor1, const T2& tensor2, double epsilon = 1e-8) {
@@ -90,17 +147,33 @@ void print_f_map(const std::string& label, const Eigen::TensorMap<Eigen::Tensor<
 
 // produces same output as a fortran print *, statement
 // mainly used for generating nicely formatted c++ tensor with python helper
-template <typename T, int Rank>
+// template <typename T, int Rank>
+// void print_f_raw(const std::string& label, const Eigen::Tensor<T, Rank>& tensor) {
+//   std::cout << label << "  ";
+//   for (int i = 0; i < tensor.dimensions().size(); ++i) {
+//     std::cout << tensor.dimensions()[i] << "        ";
+//   }
+//   std::cout << "vals:    ";
+//   for (int linear_idx = 0; linear_idx < tensor.size(); ++linear_idx) {
+//     std::cout << std::setprecision(17) << tensor.coeff(linear_idx) << "        ";
+//   }
+//   std::cout << std::endl;
+// }
+
+template<typename T, int Rank>
 void print_f_raw(const std::string& label, const Eigen::Tensor<T, Rank>& tensor) {
-  std::cout << label << "  ";
-  for (int i = 0; i < tensor.dimensions().size(); ++i) {
-    std::cout << tensor.dimensions()[i] << "        ";
-  }
-  std::cout << "vals:    ";
-  for (int linear_idx = 0; linear_idx < tensor.size(); ++linear_idx) {
-    std::cout << std::setprecision(17) << tensor.coeff(linear_idx) << "        ";
-  }
-  std::cout << std::endl;
+    std::cout << " " << label << "  ";
+    for (int i = 0; i < tensor.size(); ++i) {
+        // std::cout << std::fixed << std::setprecision(16) << tensor(i) << "        ";
+        std::cout << tensor(i) << "        ";
+    }
+    std::cout << std::endl;
+}
+
+template <typename T, int N>
+void print_f_map_raw(const std::string& label, const Eigen::TensorMap<Eigen::Tensor<T, N>>& tensor_map) {
+  Eigen::Tensor<T, N> tensor = tensor_map;
+  print_f_raw(label, tensor);
 }
 
 // converts Eigen::Matrix to Eigen::Tensor

@@ -17,7 +17,8 @@ target_link_libraries(test_cpp_fortran_interface
 
 add_executable(test_discretization_grid test_discretization_grid.cpp)
 target_link_libraries(test_discretization_grid 
-                      discretization_grid 
+                      discretization_grid
+                      fortran_library
                       ${PETSC_ARCH_DIR}/lib/libpetsc.so
                       ${ZLIB_LIBRARIES}
                       GTest::GTest 
@@ -33,6 +34,7 @@ target_link_libraries(test_fft
 add_executable(test_spectral test_spectral.cpp)
 target_link_libraries(test_spectral
                       spectral
+                      fortran_library
                       discretization_grid
                       GTest::GTest
                       GTest::Main 
@@ -42,6 +44,7 @@ add_executable(test_mech_base test_mech_base.cpp)
 target_link_libraries(test_mech_base 
                       ${PETSC_ARCH_DIR}/lib/libpetsc.so
                       mech_base
+                      fortran_library
                       spectral
                       discretization_grid
                       GTest::GTest 
@@ -52,6 +55,7 @@ add_executable(test_mech_solver_basic test_mech_solver_basic.cpp)
 target_link_libraries(test_mech_solver_basic
                       PUBLIC
                       mech_solver_basic
+                      fortran_library
                       ${PETSC_ARCH_DIR}/lib/libpetsc.so
                       GTest::GTest 
                       GTest::Main 

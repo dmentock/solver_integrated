@@ -101,7 +101,7 @@ module subroutine mechanical_partition(subF,ce)
   integer :: co
   real(pREAL), dimension (3,3,homogenization_Nconstituents(material_ID_homogenization(ce))) :: Fs
 
-  print *, ">> mechanical_partition"
+  print *, ">> mechanical_partition", homogenization_F
 
   chosenHomogenization: select case(mechanical_type(material_ID_homogenization(ce)))
 
@@ -119,7 +119,7 @@ module subroutine mechanical_partition(subF,ce)
   do co = 1,homogenization_Nconstituents(material_ID_homogenization(ce))
     call phase_set_F(Fs(1:3,1:3,co),co,ce)
   end do
-  print *, "<< mechanical_partition"
+  print *, "<< mechanical_partition", homogenization_F
 
 
 end subroutine mechanical_partition
@@ -134,16 +134,25 @@ module subroutine mechanical_homogenize(Delta_t,ce)
   integer, intent(in) :: ce
 
   integer :: co
-
-  ! print*, "hee", ce, "zz", phase_P(1,ce),"ff", material_v(1,ce)
+  real(pREAL), dimension(3,3) :: P
+  print *, ">> mechanical_homogenize"
+  print *, "ce", ce
+  ! P = phase_P(1,ce)
+  print*, "papi"
+  ! print*, "phase_P", P
+  print*, "material_v",material_v(1,ce)
+    ! print *, "phase_P", phase_P(1,ce)
+    ! print *, "material_v", material_v(1,ce)
   homogenization_P(1:3,1:3,ce)            = phase_P(1,ce)*material_v(1,ce)
   homogenization_dPdF(1:3,1:3,1:3,1:3,ce) = phase_mechanical_dPdF(Delta_t,1,ce)*material_v(1,ce)
   do co = 2, homogenization_Nconstituents(material_ID_homogenization(ce))
+    print *, "coco"
     homogenization_P(1:3,1:3,ce)            = homogenization_P(1:3,1:3,ce) &
                                             + phase_P(co,ce)*material_v(co,ce)
     homogenization_dPdF(1:3,1:3,1:3,1:3,ce) = homogenization_dPdF(1:3,1:3,1:3,1:3,ce) &
                                             + phase_mechanical_dPdF(Delta_t,co,ce)*material_v(co,ce)
   end do
+  print *, "<< mechanical_homogenize"
 
 end subroutine mechanical_homogenize
 

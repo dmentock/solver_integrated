@@ -122,41 +122,57 @@ Tensor<double, 5> Spectral::constitutive_response(Tensor<double, 2> &P_av,
                                                   Tensor<double, 4> &C_volAvg, 
                                                   Tensor<double, 4> &C_minMaxAvg,
                                                   TensorMap<Tensor<double, 5>> &F,
-                                                  double Delta_t,
+                                                  double delta_t,
                                                   int rank, 
                                                   std::optional<Eigen::Quaterniond> rot_bc_q) {
 
+  cout << " >> constitutive_response" << endl;
   std::cout << "\n ... evaluating constitutive response ......................................" << std::endl;
 
   int n_cells = F.dimension(2) * F.dimension(3) * F.dimension(4);
-  Tensor<double, 3> homogenization_F(3, 3, n_cells);
-  homogenization_F = F.reshape(Eigen::array<int, 3>({3, 3, n_cells}));
+  // Tensor<double, 3> homogenization_F(3, 3, n_cells);
 
+  *homogenization_F = F.reshape(Eigen::array<int, 3>({3, 3, n_cells}));
+  // print_f_map_raw("homogenization_F", *homogenization_F);
+  // print_f_raw("P_av", P_av);
+  // print_f_raw("C_volAvg", C_volAvg);
+  // print_f_raw("C_minMaxAvg", C_minMaxAvg);
+  // print_f_map_raw("F", F);
+  // cout << "delta_t  " << delta_t << endl;
+  // cout << "rank  " << rank << endl;
   int cell_start = 1;
-  mechanical_response(Delta_t, cell_start, n_cells);
+  mechanical_response(delta_t, cell_start, n_cells);
 
   if (!*terminally_ill)
-    thermal_response(Delta_t, cell_start, n_cells);
+    thermal_response(delta_t, cell_start, n_cells);
 
   if (!*terminally_ill) {
     std::array<int, 2> FEsolving_execIP = {1, 1};
     std::array<int, 2> FEsolving_execElem = {1, n_cells};
-    mechanical_response2(Delta_t, FEsolving_execIP, FEsolving_execElem);
+    mechanical_response2(delta_t, FEsolving_execIP, FEsolving_execElem);
   }
-
+  // print_f_map("DONE WITH CONSTITUTIVE", *homogenization_P);
 
   Eigen::Tensor<double, 5> P = homogenization_P->reshape(F.dimensions());
+  // print_f_raw("P", P);
+
   Eigen::array<Eigen::Index, 3> dims_to_reduce = {2, 3, 4};
   P_av = (P.sum(dims_to_reduce) * wgt).eval();
+  // print_f_raw("P_av", P_av);
+
   MPI_Allreduce(MPI_IN_PLACE, P_av.data(), 9, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+  std::ostringstream oss;
+  oss << std::fixed << std::setprecision(4);
   if (rot_bc_q.has_value()) {
     if (!rot_bc_q.value().isApprox(Eigen::Quaterniond(1.0, 0.0, 0.0, 0.0))) {
-      std::cout << "Piola--Kirchhoff stress (lab) / MPaa =\n" << P_av * 1.e-6 << std::endl;
+      oss << " Piola--Kirchhoff stress (lab) / MPa =\n" << P_av * 1.e-6;
+      std::cout << oss.str() << std::endl;
     }
     P_av = FortranUtilities::rotate_tensor2(rot_bc_q.value(), P_av);
   }
-  std::cout << "Piola--Kirchhoff stress       / MPa =\n" << P_av * 1.e-6 << std::endl;
-  exit(0);
+  oss << " Piola--Kirchhoff stress       / MPa =\n" << P_av * 1.e-6;
+  std::cout << oss.str() << std::endl;
+
   Eigen::Tensor<double, 4> dPdF_max(3, 3, 3, 3);
   dPdF_max.setZero();
   Eigen::Tensor<double, 4> dPdF_min(3, 3, 3, 3);
@@ -192,6 +208,8 @@ Tensor<double, 5> Spectral::constitutive_response(Tensor<double, 2> &P_av,
   MPI_Allreduce(MPI_IN_PLACE, C_volAvg.data(), 81, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
   C_volAvg = C_volAvg * wgt;
 
+  // print_f_raw("P", P);
+  cout << " << constitutive_response" << endl;
   return P;
 }
 

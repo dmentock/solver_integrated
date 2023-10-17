@@ -33,7 +33,7 @@ public:
   // Abstract solver interface
   virtual void init() = 0;
   virtual Config::SolutionState calculate_solution(std::string& inc_info_) = 0;
-  virtual void forward (bool cutBack, bool guess, double Delta_t, double Delta_t_old, double t_remaining,
+  virtual void forward (bool cutBack, bool guess, double delta_t, double delta_t_old, double t_remaining,
                 Config::BoundaryCondition& deformation_BC, 
                 Config::BoundaryCondition& stress_BC, 
                 Quaterniond& rotation_BC) = 0;

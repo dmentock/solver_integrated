@@ -4,7 +4,6 @@
 !--------------------------------------------------------------------------------------------------
 module config
   use IO
-  use tensor_printer
   use misc
   use YAML_parse
   use YAML_types

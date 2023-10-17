@@ -7,7 +7,6 @@
 !--------------------------------------------------------------------------------------------------
 module HDF5_utilities
   use IO
-  use tensor_printer
   use HDF5
 #ifdef PETSC
 #include <petsc/finclude/petscsys.h>

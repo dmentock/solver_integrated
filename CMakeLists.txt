@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.12.0)
 include(FindPkgConfig REQUIRED)
 
 if(DEFINED ENV{PETSC_DIR})
-    message("PETSC_DIR:\n$ENV{PETSC_DIR}\n")
+    message("PETSC_DIR:\n$ENV{PETSC_DIR}/$ENV{PETSC_ARCH}\n")
 else()
     message(FATAL_ERROR "PETSc location (PETSC_DIR) is not defined")
 endif()

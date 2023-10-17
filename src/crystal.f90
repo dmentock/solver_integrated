@@ -10,7 +10,6 @@ module crystal
   use prec
   use misc
   use IO
-  use tensor_printer
   use config
   use math
   use rotations
@@ -124,18 +123,21 @@ module crystal
   real(pREAL), dimension(3+3,CI_NSLIP), parameter :: &
     CI_SYSTEMSLIP = reshape(real([&
     ! <111>{110} systems
+    ! Sign convention follows Table 1 of 10.1016/j.ijplas.2020.102733
+    ! to allow for universal calculation of non-glide plane normal n1 = Rot(-m,60°) @ n
+    ! The choice matters since Rot(-m,60°) @ n ≠ Rot(m,60°) @ -n ..!
        1,-1, 1,     0, 1, 1, &
-      -1,-1, 1,     0, 1, 1, &
-       1, 1, 1,     0,-1, 1, &
+      -1,-1, 1,     0,-1,-1, &
+       1, 1, 1,     0, 1,-1, &
       -1, 1, 1,     0,-1, 1, &
-      -1, 1, 1,     1, 0, 1, &
+      -1, 1, 1,    -1, 0,-1, &
       -1,-1, 1,     1, 0, 1, &
        1, 1, 1,    -1, 0, 1, &
-       1,-1, 1,    -1, 0, 1, &
+       1,-1, 1,     1, 0,-1, &
       -1, 1, 1,     1, 1, 0, &
-      -1, 1,-1,     1, 1, 0, &
-       1, 1, 1,    -1, 1, 0, &
-       1, 1,-1,    -1, 1, 0, &
+       1,-1, 1,    -1,-1, 0, &
+       1, 1, 1,     1,-1, 0, &
+      -1,-1, 1,    -1, 1, 0, &
      ! <111>{112} systems
       -1, 1, 1,     2, 1, 1, &
        1, 1, 1,    -2, 1, 1, &
@@ -387,7 +389,6 @@ module crystal
     crystal_SchmidMatrix_twin, &
     crystal_SchmidMatrix_trans, &
     crystal_SchmidMatrix_cleavage, &
-    crystal_nonSchmidMatrix, &
     crystal_interaction_SlipBySlip, &
     crystal_interaction_TwinByTwin, &
     crystal_interaction_TransByTrans, &
@@ -590,54 +591,6 @@ function crystal_C66_trans(Ntrans,C_parent66,crystal_target, &
   end do
 
  end function crystal_C66_trans
-
-
-!--------------------------------------------------------------------------------------------------
-!> @brief Non-schmid projections for cI with up to 6 coefficients
-! https://doi.org/10.1016/j.actamat.2012.03.053, eq. (17)
-! https://doi.org/10.1016/j.actamat.2008.07.037, table 1
-!--------------------------------------------------------------------------------------------------
-function crystal_nonSchmidMatrix(Nslip,nonSchmidCoefficients,sense) result(nonSchmidMatrix)
-
-  integer,     dimension(:),                intent(in) :: Nslip                                     !< number of active slip systems per family
-  real(pREAL), dimension(:),                intent(in) :: nonSchmidCoefficients                     !< non-Schmid coefficients for projections
-  integer,                                  intent(in) :: sense                                     !< sense (-1,+1)
-  real(pREAL), dimension(1:3,1:3,sum(Nslip))           :: nonSchmidMatrix
-
-  real(pREAL), dimension(1:3,1:3,sum(Nslip))           :: coordinateSystem                          !< coordinate system of slip system
-  real(pREAL), dimension(3)                            :: direction, normal, np
-  type(tRotation)                                      :: R
-  integer                                              :: i
-
-
-  if (abs(sense) /= 1) error stop 'Sense in crystal_nonSchmidMatrix'
-
-  coordinateSystem  = buildCoordinateSystem(Nslip,CI_NSLIPSYSTEM,CI_SYSTEMSLIP,'cI',0.0_pREAL)
-  coordinateSystem(1:3,1,1:sum(Nslip)) = coordinateSystem(1:3,1,1:sum(Nslip))*real(sense,pREAL)     ! convert unidirectional coordinate system
-  nonSchmidMatrix = crystal_SchmidMatrix_slip(Nslip,'cI',0.0_pREAL)                                 ! Schmid contribution
-
-  do i = 1,sum(Nslip)
-    direction = coordinateSystem(1:3,1,i)
-    normal    = coordinateSystem(1:3,2,i)
-    call R%fromAxisAngle([direction,60.0_pREAL],degrees=.true.,P=1)
-    np = R%rotate(normal)
-
-    if (size(nonSchmidCoefficients)>0) nonSchmidMatrix(1:3,1:3,i) = nonSchmidMatrix(1:3,1:3,i) &
-      + nonSchmidCoefficients(1) * math_outer(direction, np)
-    if (size(nonSchmidCoefficients)>1) nonSchmidMatrix(1:3,1:3,i) = nonSchmidMatrix(1:3,1:3,i) &
-      + nonSchmidCoefficients(2) * math_outer(math_cross(normal, direction), normal)
-    if (size(nonSchmidCoefficients)>2) nonSchmidMatrix(1:3,1:3,i) = nonSchmidMatrix(1:3,1:3,i) &
-      + nonSchmidCoefficients(3) * math_outer(math_cross(np, direction), np)
-    if (size(nonSchmidCoefficients)>3) nonSchmidMatrix(1:3,1:3,i) = nonSchmidMatrix(1:3,1:3,i) &
-      + nonSchmidCoefficients(4) * math_outer(normal, normal)
-    if (size(nonSchmidCoefficients)>4) nonSchmidMatrix(1:3,1:3,i) = nonSchmidMatrix(1:3,1:3,i) &
-      + nonSchmidCoefficients(5) * math_outer(math_cross(normal, direction), &
-                                              math_cross(normal, direction))
-    if (size(nonSchmidCoefficients)>5) nonSchmidMatrix(1:3,1:3,i) = nonSchmidMatrix(1:3,1:3,i) &
-      + nonSchmidCoefficients(6) * math_outer(direction, direction)
-  end do
-
-end function crystal_nonSchmidMatrix
 
 
 !--------------------------------------------------------------------------------------------------
@@ -1393,17 +1346,26 @@ end function crystal_interaction_TwinBySlip
 !--------------------------------------------------------------------------------------------------
 !> @brief Schmid matrix for slip
 !> details only active slip systems are considered
+! Non-schmid projections for cI with up to 6 coefficients
+! https://doi.org/10.1016/j.actamat.2012.03.053, eq. (17)
+! https://doi.org/10.1016/j.actamat.2008.07.037, table 1
 !--------------------------------------------------------------------------------------------------
-function crystal_SchmidMatrix_slip(Nslip,lattice,cOverA) result(SchmidMatrix)
+function crystal_SchmidMatrix_slip(Nslip,lattice,cOverA,nonSchmidCoefficients,sense) result(SchmidMatrix)
 
-  integer,         dimension(:),            intent(in) :: Nslip                                     !< number of active slip systems per family
-  character(len=*),                         intent(in) :: lattice                                   !< Bravais lattice (Pearson symbol)
-  real(pREAL),                              intent(in) :: cOverA
-  real(pREAL),     dimension(3,3,sum(Nslip))           :: SchmidMatrix
+  integer,     dimension(:),              intent(in) :: Nslip                                       !< number of active slip systems per family
+  character(len=*),                       intent(in) :: lattice                                     !< Bravais lattice (Pearson symbol)
+  real(pREAL),                            intent(in) :: cOverA
+  real(pREAL), dimension(:,:), optional,  intent(in) :: nonSchmidCoefficients                       !< non-Schmid coefficients for projections
+  integer,                     optional,  intent(in) :: sense                                       !< sense (-1,+1)
+  real(pREAL), dimension(3,3,sum(Nslip))             :: SchmidMatrix
 
   real(pREAL), dimension(3,3,sum(Nslip))             :: coordinateSystem
   real(pREAL), dimension(:,:),           allocatable :: slipSystems
   integer,     dimension(:),             allocatable :: NslipMax
+  integer,     dimension(:),             allocatable :: slipFamily
+  real(pREAL), dimension(3)                          :: direction, normal, np
+  real(pREAL), dimension(6)                          :: coeff                                       !< local nonSchmid coefficient variable
+  type(tRotation)                                    :: R
   integer                                            :: i
 
   select case(lattice)
@@ -1429,12 +1391,41 @@ function crystal_SchmidMatrix_slip(Nslip,lattice,cOverA) result(SchmidMatrix)
   if (any(Nslip < 0)) &
     call IO_error(144,ext_msg='Nslip '//trim(lattice))
 
+  slipFamily = math_expand([(i, i=1,size(Nslip))],Nslip)
   coordinateSystem = buildCoordinateSystem(Nslip,NslipMax,slipSystems,lattice,cOverA)
+  if (present(sense)) then
+    if (abs(sense) /= 1) error stop 'neither +1 nor -1 sense in crystal_SchmidMatrix_slip'
+    coordinateSystem(1:3,1,1:sum(Nslip)) = coordinateSystem(1:3,1,1:sum(Nslip)) * real(sense,pREAL)
+  end if
 
-  do i = 1, sum(Nslip)
-    SchmidMatrix(1:3,1:3,i) = math_outer(coordinateSystem(1:3,1,i),coordinateSystem(1:3,2,i))
+  do i = 1,sum(Nslip)
+    direction = coordinateSystem(1:3,1,i)
+    normal    = coordinateSystem(1:3,2,i)
+
+    SchmidMatrix(1:3,1:3,i) = math_outer(direction,normal)
     if (abs(math_trace33(SchmidMatrix(1:3,1:3,i))) > tol_math_check) &
       error stop 'dilatational Schmid matrix for slip'
+
+    if (present(nonSchmidCoefficients)) then
+      select case(lattice)
+        case('cI')
+          coeff(:) = 0.0_pREAL
+          select case(slipFamily(i))
+            case(1)
+              coeff(:size(nonSchmidCoefficients(1,:))) = nonSchmidCoefficients(1,:)
+              call R%fromAxisAngle([direction,60.0_pREAL],degrees=.true.,P=1)
+              np = R%rotate(normal)
+              SchmidMatrix(1:3,1:3,i) = SchmidMatrix(1:3,1:3,i) &
+                                      + coeff(1) * math_outer(direction, np) &
+                                      + coeff(2) * math_outer(math_cross(normal, direction), normal) &
+                                      + coeff(3) * math_outer(math_cross(np, direction), np) &
+                                      + coeff(4) * math_outer(normal, normal) &
+                                      + coeff(5) * math_outer(math_cross(normal, direction), &
+                                                              math_cross(normal, direction)) &
+                                      + coeff(6) * math_outer(direction, direction)
+          end select
+      end select
+    end if
   end do
 
 end function crystal_SchmidMatrix_slip
@@ -1446,10 +1437,10 @@ end function crystal_SchmidMatrix_slip
 !--------------------------------------------------------------------------------------------------
 function crystal_SchmidMatrix_twin(Ntwin,lattice,cOverA) result(SchmidMatrix)
 
-  integer,         dimension(:),            intent(in) :: Ntwin                                     !< number of active twin systems per family
-  character(len=*),                         intent(in) :: lattice                                   !< Bravais lattice (Pearson symbol)
-  real(pREAL),                              intent(in) :: cOverA                                    !< c/a ratio
-  real(pREAL),     dimension(3,3,sum(Ntwin))           :: SchmidMatrix
+  integer,     dimension(:),              intent(in) :: Ntwin                                       !< number of active twin systems per family
+  character(len=*),                       intent(in) :: lattice                                     !< Bravais lattice (Pearson symbol)
+  real(pREAL),                            intent(in) :: cOverA                                      !< c/a ratio
+  real(pREAL), dimension(3,3,sum(Ntwin))             :: SchmidMatrix
 
   real(pREAL), dimension(3,3,sum(Ntwin))             :: coordinateSystem
   real(pREAL), dimension(:,:),           allocatable :: twinSystems
@@ -1522,10 +1513,10 @@ end function crystal_SchmidMatrix_trans
 !--------------------------------------------------------------------------------------------------
 function crystal_SchmidMatrix_cleavage(Ncleavage,lattice,cOverA) result(SchmidMatrix)
 
-  integer,         dimension(:),                  intent(in) :: Ncleavage                           !< number of active cleavage systems per family
-  character(len=*),                               intent(in) :: lattice                             !< Bravais lattice (Pearson symbol)
-  real(pREAL),                                    intent(in) :: cOverA                              !< c/a ratio
-  real(pREAL),     dimension(3,3,3,sum(Ncleavage))           :: SchmidMatrix
+  integer,     dimension(:),                  intent(in) :: Ncleavage                               !< number of active cleavage systems per family
+  character(len=*),                           intent(in) :: lattice                                 !< Bravais lattice (Pearson symbol)
+  real(pREAL),                                intent(in) :: cOverA                                  !< c/a ratio
+  real(pREAL), dimension(3,3,3,sum(Ncleavage))           :: SchmidMatrix
 
   real(pREAL), dimension(3,3,sum(Ncleavage))             :: coordinateSystem
   real(pREAL), dimension(:,:),               allocatable :: cleavageSystems
@@ -1905,7 +1896,7 @@ end function buildInteraction
 !--------------------------------------------------------------------------------------------------
 function buildCoordinateSystem(active,potential,system,lattice,cOverA) result(coordinateSystem)
 
-  integer, dimension(:), intent(in) :: &
+  integer,     dimension(:),   intent(in) :: &
     active, &                                                                                       !< # of active systems per family
     potential                                                                                       !< # of potential systems per family
   real(pREAL), dimension(:,:), intent(in) :: &
@@ -2232,7 +2223,7 @@ end function crystal_isotropic_mu
 !--------------------------------------------------------------------------------------------------
 !> @brief Check correctness of some crystal functions.
 !--------------------------------------------------------------------------------------------------
-subroutine crystal_selfTest
+subroutine crystal_selfTest()
 
   real(pREAL), dimension(:,:,:), allocatable :: CoSy
   real(pREAL), dimension(:,:),   allocatable :: system

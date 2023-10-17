@@ -25,14 +25,11 @@ module math
 
   implicit none(type,external)
   public
-#if __INTEL_COMPILER >= 1900
-  ! do not make use of associated entities available to other modules
-  private :: &
-    misc, &
-    IO, &
-    config, &
-    parallelization
-#endif
+
+  interface math_expand
+    module procedure math_expand_int
+    module procedure math_expand_real
+  end interface math_expand
 
   real(pREAL), parameter :: &
     PI = acos(-1.0_pREAL), &                                                                        !< ratio of a circle's circumference to its diameter
@@ -137,7 +134,7 @@ end subroutine math_init
 pure recursive subroutine math_sort(a, istart, iend, sortDim)
 
   integer, dimension(:,:), intent(inout) :: a
-  integer, intent(in),optional :: istart,iend, sortDim
+  integer,       optional, intent(in)    :: istart,iend, sortDim
 
   integer :: ipivot,s,e,d
 
@@ -199,12 +196,13 @@ end subroutine math_sort
 !> @brief vector expansion
 !> @details takes a set of numbers (a,b,c,...) and corresponding multiples (x,y,z,...)
 !> to return a vector of x times a, y times b, z times c, ...
+!> If there are more multiples than numbers, the numbers are treated as a ring, i.e. looped modulo their size
 !--------------------------------------------------------------------------------------------------
-pure function math_expand(what,how)
+pure function math_expand_int(what,how)
 
-  real(pREAL),   dimension(:), intent(in) :: what
-  integer,       dimension(:), intent(in) :: how
-  real(pREAL), dimension(sum(how)) ::  math_expand
+  integer, dimension(:), intent(in) :: what
+  integer, dimension(:), intent(in) :: how
+  integer, dimension(sum(how))      :: math_expand_int
 
   integer :: i
 
@@ -212,10 +210,34 @@ pure function math_expand(what,how)
   if (sum(how) == 0) return
 
   do i = 1, size(how)
-    math_expand(sum(how(1:i-1))+1:sum(how(1:i))) = what(mod(i-1,size(what))+1)
+    math_expand_int(sum(how(1:i-1))+1:sum(how(1:i))) = what(mod(i-1,size(what))+1)
   end do
 
-end function math_expand
+end function math_expand_int
+
+
+!--------------------------------------------------------------------------------------------------
+!> @brief vector expansion
+!> @details takes a set of numbers (a,b,c,...) and corresponding multiples (x,y,z,...)
+!> to return a vector of x times a, y times b, z times c, ...
+!> If there are more multiples than numbers, the numbers are treated as a ring, i.e. looped modulo their size
+!--------------------------------------------------------------------------------------------------
+pure function math_expand_real(what,how)
+
+  real(pREAL), dimension(:), intent(in) :: what
+  integer,     dimension(:), intent(in) :: how
+  real(pREAL), dimension(sum(how))      :: math_expand_real
+
+  integer :: i
+
+
+  if (sum(how) == 0) return
+
+  do i = 1, size(how)
+    math_expand_real(sum(how(1:i-1))+1:sum(how(1:i))) = what(mod(i-1,size(what))+1)
+  end do
+
+end function math_expand_real
 
 
 !--------------------------------------------------------------------------------------------------
@@ -1063,26 +1085,16 @@ pure subroutine math_eigh33(w,v,m)
   U = max(T, T**2)
   threshold = sqrt(5.68e-14_pREAL * U**2)
 
-#ifndef __INTEL_LLVM_COMPILER
   v(1:3,1) = [m(1,3)*w(1) + v(1,2), &
               m(2,3)*w(1) + v(2,2), &
-#else
-  v(1:3,1) = [IEEE_FMA(m(1,3),w(1),v(1,2)), &
-              IEEE_FMA(m(2,3),w(1),v(2,2)), &
-#endif
               (m(1,1) - w(1)) * (m(2,2) - w(1)) - v(3,2)]
   norm = norm2(v(1:3, 1))
   fallback1: if (norm < threshold) then
     call math_eigh(w,v,error,m)
   else fallback1
     v(1:3,1) = v(1:3, 1) / norm
-#ifndef __INTEL_LLVM_COMPILER
     v(1:3,2) = [m(1,3)*w(2) + v(1,2), &
                 m(2,3)*w(2) + v(2,2), &
-#else
-    v(1:3,2) = [IEEE_FMA(m(1,3),w(2),v(1,2)), &
-                IEEE_FMA(m(2,3),w(2),v(2,2)), &
-#endif
                 (m(1,1) - w(2)) * (m(2,2) - w(2)) - v(3,2)]
     norm = norm2(v(1:3, 2))
     fallback2: if (norm < threshold) then
@@ -1354,7 +1366,10 @@ subroutine math_selfTest()
 
   if (any(abs([1.0_pREAL,2.0_pREAL,2.0_pREAL,1.0_pREAL,1.0_pREAL,1.0_pREAL] - &
               math_expand([1.0_pREAL,2.0_pREAL],[1,2,3])) > tol_math_check)) &
-    error stop 'math_expand [1,2] by [1,2,3] => [1,2,2,1,1,1]'
+    error stop 'math_expand_real [1,2] by [1,2,3] => [1,2,2,1,1,1]'
+
+  if (any(abs([1,2,2,1,1,1] - math_expand([1,2],[1,2,3])) /= 0)) &
+    error stop 'math_expand_int [1,2] by [1,2,3] => [1,2,2,1,1,1]'
 
   call math_sort(sort_in_,1,3,2)
   if (any(sort_in_ /= sort_out_)) &

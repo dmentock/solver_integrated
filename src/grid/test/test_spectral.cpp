@@ -59,9 +59,9 @@ TEST_F(GridTestSetup, SpectralTestConstitutiveResponse) {
   class PartialMockSpectral : public Spectral {
     public:
     using array2 = std::array<int, 2>;
-    MOCK_METHOD(void, mechanical_response, (double Delta_t, int cell_start, int cell_end), (override));
-    MOCK_METHOD(void, thermal_response, (double Delta_t, int cell_start, int cell_end), (override));
-    MOCK_METHOD(void, mechanical_response2, (double Delta_t, array2& FEsolving_execIP, array2& FEsolving_execElem), (override));
+    MOCK_METHOD(void, mechanical_response, (double delta_t, int cell_start, int cell_end), (override));
+    MOCK_METHOD(void, thermal_response, (double delta_t, int cell_start, int cell_end), (override));
+    MOCK_METHOD(void, mechanical_response2, (double delta_t, array2& FEsolving_execIP, array2& FEsolving_execElem), (override));
   };
 
   MockDiscretizedGrid mock_grid(std::array<int, 3>{2,1,1});
@@ -123,7 +123,7 @@ TEST_F(GridTestSetup, SpectralTestConstitutiveResponse) {
   EXPECT_CALL(spectral, mechanical_response(testing::_, testing::_, testing::_)).WillOnce(testing::DoDefault());
   EXPECT_CALL(spectral, thermal_response(testing::_, testing::_, testing::_)).WillOnce(testing::DoDefault());
   EXPECT_CALL(spectral, mechanical_response2(testing::_, testing::_, testing::_))
-    .WillOnce([&](double Delta_t, 
+    .WillOnce([&](double delta_t, 
                   std::array<int, 2>& FEsolving_execIP, 
                   std::array<int, 2>& FEsolving_execElem) {
         *spectral.homogenization_P = mech2_homogenization_P_result;

@@ -294,12 +294,12 @@ end function rotVector
   logical,         intent(in), optional       :: active
 
 
-  a = matmul(transpose(self%asMatrix()),T)
-  b = self%asMatrix()
-  c = matmul(a, b)
-  print *, "a", a
-  print *, "b", b
-  print *, "c", c
+  ! a = matmul(transpose(self%asMatrix()),T)
+  ! b = self%asMatrix()
+  ! c = matmul(a, b)
+  ! print *, "a", a
+  ! print *, "b", b
+  ! print *, "c", c
   ! print *, "self%asMatrix", self%asMatrix()
   ! print *, "T", T
   ! print *, 1, matmul(matmul(transpose(self%asMatrix()),T),self%asMatrix())
@@ -310,7 +310,7 @@ end function rotVector
   tRot = merge(matmul(matmul(transpose(self%asMatrix()),T),self%asMatrix()), &
                matmul(matmul(self%asMatrix(),T),transpose(self%asMatrix())), &
                misc_optional(active,.false.))
-  print *, "tRot", tRot
+  ! print *, "tRot", tRot
 
 end function rotTensor2
 

@@ -17,9 +17,9 @@ extern "C" {
   void f_homogenization_fetch_tensor_pointers(double** homogenization_F0, double** homogenization_F,
                                               double** homogenization_P, double** homogenization_dPdF,
                                               void** terminally_ill);
-  void f_homogenization_mechanical_response(double* Delta_t, int* cell_start, int* cell_end);
-  void f_homogenization_thermal_response(double* Delta_t, int* cell_start, int* cell_end);
-  void f_homogenization_mechanical_response2(double* Delta_t, int* FEsolving_execIP, int* FEsolving_execElem);
+  void f_homogenization_mechanical_response(double* delta_t, int* cell_start, int* cell_end);
+  void f_homogenization_thermal_response(double* delta_t, int* cell_start, int* cell_end);
+  void f_homogenization_mechanical_response2(double* delta_t, int* FEsolving_execIP, int* FEsolving_execElem);
 }
 
 class Spectral {
@@ -33,7 +33,7 @@ public:
                                                   Tensor<double, 4> &C_volAvg, 
                                                   Tensor<double, 4> &C_minMaxAvg,
                                                   TensorMap<Tensor<double, 5>> &F,
-                                                  double Delta_t,
+                                                  double delta_t,
                                                   int rank,
                                                   std::optional<Quaterniond> rot_bc_q = std::nullopt);   
 
@@ -53,14 +53,14 @@ public:
     terminally_ill = static_cast<bool*>(raw_terminally_ill_raw_ptr);
   }
 
-  virtual void mechanical_response(double Delta_t, int cell_start, int cell_end){
-    f_homogenization_mechanical_response(&Delta_t, &cell_start, &cell_end);
+  virtual void mechanical_response(double delta_t, int cell_start, int cell_end){
+    f_homogenization_mechanical_response(&delta_t, &cell_start, &cell_end);
   }
-  virtual void thermal_response(double Delta_t, int cell_start, int cell_end){
-    f_homogenization_thermal_response(&Delta_t, &cell_start, &cell_end);
+  virtual void thermal_response(double delta_t, int cell_start, int cell_end){
+    f_homogenization_thermal_response(&delta_t, &cell_start, &cell_end);
   }
-  virtual void mechanical_response2(double Delta_t, std::array<int, 2>& FEsolving_execIP, std::array<int, 2>& FEsolving_execElem){
-    f_homogenization_mechanical_response2(&Delta_t, FEsolving_execIP.data(), FEsolving_execElem.data());
+  virtual void mechanical_response2(double delta_t, std::array<int, 2>& FEsolving_execIP, std::array<int, 2>& FEsolving_execElem){
+    f_homogenization_mechanical_response2(&delta_t, FEsolving_execIP.data(), FEsolving_execElem.data());
   }
 
   std::unique_ptr<TensorMap<Tensor<double, 3>>> homogenization_F0;

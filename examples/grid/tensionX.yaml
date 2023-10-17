@@ -14,7 +14,7 @@ loadstep:
             [x, x, 0]]
     discretization:
       t: 10
-      N: 40
+      N: 10
     f_out: 4
   - boundary_conditions:
       mechanical:

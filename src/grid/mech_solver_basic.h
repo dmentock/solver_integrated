@@ -21,7 +21,7 @@ public:
                                   SNESConvergedReason *reason, 
                                   void *ctx);
   Config::SolutionState calculate_solution(std::string& inc_info_) override;
-  void forward (bool cutBack, bool guess, double Delta_t, double Delta_t_old, double t_remaining,
+  void forward (bool cutBack, bool guess, double delta_t, double delta_t_old, double t_remaining,
                 Config::BoundaryCondition& deformation_BC, 
                 Config::BoundaryCondition& stress_BC, 
                 Quaterniond& rotation_BC) override;

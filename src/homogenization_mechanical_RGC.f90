@@ -477,12 +477,10 @@ module function RGC_updateState(P,F,avgF,dt,dPdF,ce) result(doneAndHappy)
   stt%relaxationVector(:,en) = relax + drelax                                                       ! Updateing the state variable for the next iteration
   if (any(abs(drelax) > num%maxdRelax)) then                                                        ! Forcing cutback when the incremental change of relaxation vector becomes too large
     doneAndHappy = [.true.,.false.]
-    !$OMP CRITICAL (write2out)
-    print'(a,i3,a,i3,a)',' RGC_updateState: enforces cutback'
+        print'(a,i3,a,i3,a)',' RGC_updateState: enforces cutback'
     print'(a,e15.8)',' due to large relaxation change = ',maxval(abs(drelax))
     flush(IO_STDOUT)
-    !$OMP END CRITICAL (write2out)
-  end if
+      end if
 
   end associate
 

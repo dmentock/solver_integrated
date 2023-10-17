@@ -128,7 +128,7 @@ loadstep:
   Config config;
   std::map<std::string, std::string> fields;
 
-  config.load_steps = Config::parse_load_yaml(loadfile_path, fields);
+  config.load_steps = config.parse_load_yaml(loadfile_path, fields);
 
   std::map<std::string, std::string> expected_fields;
   expected_fields["mechanical"] = "spectral_basic";
@@ -194,7 +194,7 @@ loadstep:
   Config config;
   std::map<std::string, std::string> fields;
 
-  config.load_steps = Config::parse_load_yaml(loadfile_path, fields);
+  config.load_steps = config.parse_load_yaml(loadfile_path, fields);
 
   std::map<std::string, std::string> expected_fields;
   expected_fields["mechanical"] = "spectral_basic";
@@ -239,7 +239,7 @@ loadstep:
   std::map<std::string, std::string> fields;
 
   try {
-    config.load_steps = Config::parse_load_yaml(loadfile_path, fields);
+    config.load_steps = config.parse_load_yaml(loadfile_path, fields);
   } catch (const std::exception& e) {
     // TODO: create wrapper with more useful error message
     EXPECT_STREQ(e.what(), "Mandatory key {dot_F/L/F} missing");

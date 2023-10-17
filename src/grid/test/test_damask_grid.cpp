@@ -62,10 +62,10 @@ TEST_F(GridTestSetup, TestDamaskGridSolve) {
   damask_grid.fields.mech = std::make_unique<MockMechSolverBasic>(std::move(mech_basic));
 
   std::string inc_info;
-  double Delta_t;
+  double delta_t;
   int stag_it_max = 10;
   DamaskGrid::SolutionStates solution_states;
-  bool converged = damask_grid.solve_fields(solution_states, Delta_t, inc_info, stag_it_max);
+  bool converged = damask_grid.solve_fields(solution_states, delta_t, inc_info, stag_it_max);
   EXPECT_EQ(converged, true);
   // TODO: verify with different field configurations
 }

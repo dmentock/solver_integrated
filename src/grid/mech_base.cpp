@@ -223,6 +223,14 @@ Tensor<double, 5> MechBase::forward_field(double delta_t,
                                           Tensor<double, 5> &rate,
                                           Eigen::Matrix<double, 3, 3>* aim) {
 
+  
+  cout << " >> base forward_field" << endl;
+  // cout << "delta_t " << delta_t << endl;
+  // print_f_raw("field_last_inc", field_last_inc);
+  // print_f_raw("rate", rate);
+  // print_f_raw("aim", *aim);
+  // cout << "aim " << *aim;
+
 
   Tensor<double, 5> forwarded_field = field_last_inc + rate*delta_t;
   if (aim != nullptr){
@@ -255,6 +263,8 @@ Tensor<double, 5> MechBase::forward_field(double delta_t,
       }
     }
   }
+  // print_f_raw("forwarded_field", forwarded_field);
+  cout << " << base forward_field" << endl;
   return forwarded_field;
 }
 
@@ -312,6 +322,9 @@ Tensor<double, 4> MechBase::calculate_masked_compliance( Tensor<double, 4> &C,
 }
 
 double MechBase::calculate_divergence_rms(const Tensor<double, 5>& tensor_field) {
+  cout << " >> calculate_divergence_rms" << endl;
+  // print_f_raw("tensor_field", tensor_field);
+
   Eigen::Tensor<std::complex<double>, 5> tensorfield_fourier = spectral.tensorfield->forward(tensor_field);
 
   Eigen::Vector3cd rescaled_geom;
@@ -352,12 +365,24 @@ double MechBase::calculate_divergence_rms(const Tensor<double, 5>& tensor_field)
   MPI_Allreduce(MPI_IN_PLACE, &rms, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
   rms = sqrt(rms) * spectral.wgt;
   if (grid_.cells[0] == 1) rms = rms/2;
+
+  // print_f_raw("tensor_field", tensor_field);
+  // cout << "rms " << rms << endl;
+  cout << " << calculate_divergence_rms" << endl;
   return rms;
 }
 
 void MechBase::gamma_convolution(TensorMap<Tensor<double, 5>> &field, Tensor<double, 2> &field_aim) {
 
+  cout << "\n ... doing gamma convolution ..............................................." << endl;
+  cout << " >> gamma_convolution" << endl;
+  // print_f_map_raw("field", field);
+  // print_f_map_raw("spectral.tensorfield f", *spectral.tensorfield->field_fourier);
+
   Eigen::Tensor<std::complex<double>, 5> tensorfield_fourier = spectral.tensorfield->forward(field);
+  // print_f_map_raw("spectral.tensorfield f", *spectral.tensorfield->field_fourier);
+  // print_f_raw("tensorfield_fourier", tensorfield_fourier);
+
   Eigen::Matrix<complex<double>, 3, 3> temp33_cmplx;
   temp33_cmplx.setZero();
   if (config.numerics.memory_efficient) {
@@ -368,7 +393,14 @@ void MechBase::gamma_convolution(TensorMap<Tensor<double, 5>> &field, Tensor<dou
     for (int j = 0; j < grid_.cells1_tensor; ++j) {
       for (int k = 0; k < grid_.cells[2]; ++k) {
         for (int i = 0; i < grid_.cells0_reduced; ++i) {
-          if (!(i == 0 && j + grid_.cells1_offset_tensor == 0 && k == 0)) { // singular point at xi=(0.0,0.0,0.0) i.e. i=j=k=1
+          // cout << " cppi  " << i << endl;
+          // cout << " grid_.cells1_tensor  " << grid_.cells1_tensor << endl;
+          // cout << " cppk  " << k << endl;
+          // cout << " grid_.cells[2]  " << grid_.cells[2] << endl;
+          // cout << " cppj + grid_.cells1_offset_tensor  " << j + grid_.cells1_offset_tensor << endl;
+          // cout << " grid_.cells0_reduced  " << grid_.cells0_reduced << endl;
+
+          if (i != 0  || j + grid_.cells1_offset_tensor != 0 || k != 0) { // singular point at xi=(0.0,0.0,0.0) i.e. i=j=k=1
             for (int l = 0; l < 3; ++l) {
               for (int m = 0; m < 3; ++m) {
                 xiDyad_cmplx(l, m) = std::conj(-spectral.xi1st(l, i, k, j)) * spectral.xi1st(m, i, k, j);
@@ -388,7 +420,7 @@ void MechBase::gamma_convolution(TensorMap<Tensor<double, 5>> &field, Tensor<dou
             A.block(0, 3, 3, 3) = temp33_cmplx.imag();
             A.block(3, 0, 3, 3) = -temp33_cmplx.imag();
             // TODO: if det(A(1:3,1:3)> ...)
-            spectral.tensorfield->field_fourier->slice(Eigen::array<Eigen::Index, 5>({0, 0, i, k, j}),
+            tensorfield_fourier.slice(Eigen::array<Eigen::Index, 5>({0, 0, i, k, j}),
                                       Eigen::array<Eigen::Index, 5>({3, 3, 1, 1, 1})).setConstant(complex<double>(0,0));
           }
         }
@@ -422,15 +454,22 @@ void MechBase::gamma_convolution(TensorMap<Tensor<double, 5>> &field, Tensor<dou
       }
     }
   }
+  // print_f_raw("tensorfield_fourier", tensorfield_fourier);
   if (grid_.cells_local_offset_z==0) {
     for (int l = 0; l < 3; ++l) {
       for (int m = 0; m < 3; ++m) {
-        (*spectral.tensorfield->field_fourier)(l, m, 0, 0, 0) = complex<double>(field_aim(l, m), 0);
+        tensorfield_fourier(l, m, 0, 0, 0) = complex<double>(field_aim(l, m), 0);
       }
     }
   }
+  // print_f_raw("tensorfield_fourier", tensorfield_fourier);
   double neutral_wgt = 1;
-  field = spectral.tensorfield->backward(spectral.tensorfield->field_fourier.get(), neutral_wgt);
+  // PERFORMANCE TODO: look into directly modifying resulting tensorfield_fourier if possible
+  field = spectral.tensorfield->backward(&tensorfield_fourier, neutral_wgt);
+  // print_f_map_raw("spectral.tensorfield real", *spectral.tensorfield->field_real);
+  // print_f_map_raw("gammaField", field);
+
+  cout << " << gamma_convolution" << endl;
 }
 
 Eigen::Tensor<double, 5> MechBase::calculate_rate(bool heterogeneous, 
@@ -438,6 +477,13 @@ Eigen::Tensor<double, 5> MechBase::calculate_rate(bool heterogeneous,
                                                   const Eigen::Tensor<double, 5>& field, 
                                                   double dt, 
                                                   const Eigen::Tensor<double, 2>& avRate) {
+  cout << " >> calculate rate" << endl;
+  // cout << "heterogeneous " << heterogeneous << endl;
+  // print_f_raw("field0", field0);
+  // print_f_raw("field", field);
+  // cout << "dt " << dt << endl;
+  // print_f_raw("avRate", avRate);
+
   Eigen::Tensor<double, 5> rate(field.dimensions());
   if (heterogeneous) {
     rate = (field - field0) / dt;
@@ -450,6 +496,9 @@ Eigen::Tensor<double, 5> MechBase::calculate_rate(bool heterogeneous,
       }
     }
   }
+  // print_f_raw("rate", rate);
+  cout << " << calculate rate" << endl;
+
   return rate;
 }
 

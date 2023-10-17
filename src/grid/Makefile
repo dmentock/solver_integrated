@@ -57,10 +57,10 @@ RM = /home/snkr/.local/lib/python3.10/site-packages/cmake/data/bin/cmake -E rm -
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/snkr/DAMASK
+CMAKE_SOURCE_DIR = /home/snkr/solver_integrated
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/snkr/DAMASK
+CMAKE_BINARY_DIR = /home/snkr/solver_integrated
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -132,14 +132,14 @@ install/strip/fast: preinstall/fast
 
 # The main all target
 all: cmake_check_build_system
-	cd /home/snkr/DAMASK && $(CMAKE_COMMAND) -E cmake_progress_start /home/snkr/DAMASK/CMakeFiles /home/snkr/DAMASK/src/grid//CMakeFiles/progress.marks
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/grid/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/snkr/DAMASK/CMakeFiles 0
+	cd /home/snkr/solver_integrated && $(CMAKE_COMMAND) -E cmake_progress_start /home/snkr/solver_integrated/CMakeFiles /home/snkr/solver_integrated/src/grid//CMakeFiles/progress.marks
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/grid/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/snkr/solver_integrated/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/grid/clean
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/grid/clean
 .PHONY : clean
 
 # The main clean target
@@ -148,23 +148,23 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/grid/preinstall
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/grid/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/grid/preinstall
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/grid/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /home/snkr/DAMASK && $(CMAKE_COMMAND) -P /home/snkr/DAMASK/CMakeFiles/VerifyGlobs.cmake
-	cd /home/snkr/DAMASK && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/snkr/solver_integrated && $(CMAKE_COMMAND) -P /home/snkr/solver_integrated/CMakeFiles/VerifyGlobs.cmake
+	cd /home/snkr/solver_integrated && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 src/grid/CMakeFiles/base64.dir/rule:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/grid/CMakeFiles/base64.dir/rule
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/grid/CMakeFiles/base64.dir/rule
 .PHONY : src/grid/CMakeFiles/base64.dir/rule
 
 # Convenience name for target.
@@ -173,12 +173,12 @@ base64: src/grid/CMakeFiles/base64.dir/rule
 
 # fast build rule for target.
 base64/fast:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/base64.dir/build.make src/grid/CMakeFiles/base64.dir/build
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/base64.dir/build.make src/grid/CMakeFiles/base64.dir/build
 .PHONY : base64/fast
 
 # Convenience name for target.
 src/grid/CMakeFiles/zlib.dir/rule:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/grid/CMakeFiles/zlib.dir/rule
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/grid/CMakeFiles/zlib.dir/rule
 .PHONY : src/grid/CMakeFiles/zlib.dir/rule
 
 # Convenience name for target.
@@ -187,12 +187,12 @@ zlib: src/grid/CMakeFiles/zlib.dir/rule
 
 # fast build rule for target.
 zlib/fast:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/zlib.dir/build.make src/grid/CMakeFiles/zlib.dir/build
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/zlib.dir/build.make src/grid/CMakeFiles/zlib.dir/build
 .PHONY : zlib/fast
 
 # Convenience name for target.
 src/grid/CMakeFiles/VTI.dir/rule:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/grid/CMakeFiles/VTI.dir/rule
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/grid/CMakeFiles/VTI.dir/rule
 .PHONY : src/grid/CMakeFiles/VTI.dir/rule
 
 # Convenience name for target.
@@ -201,12 +201,12 @@ VTI: src/grid/CMakeFiles/VTI.dir/rule
 
 # fast build rule for target.
 VTI/fast:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/VTI.dir/build.make src/grid/CMakeFiles/VTI.dir/build
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/VTI.dir/build.make src/grid/CMakeFiles/VTI.dir/build
 .PHONY : VTI/fast
 
 # Convenience name for target.
 src/grid/CMakeFiles/discretization_grid.dir/rule:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/grid/CMakeFiles/discretization_grid.dir/rule
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/grid/CMakeFiles/discretization_grid.dir/rule
 .PHONY : src/grid/CMakeFiles/discretization_grid.dir/rule
 
 # Convenience name for target.
@@ -215,12 +215,12 @@ discretization_grid: src/grid/CMakeFiles/discretization_grid.dir/rule
 
 # fast build rule for target.
 discretization_grid/fast:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/discretization_grid.dir/build.make src/grid/CMakeFiles/discretization_grid.dir/build
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/discretization_grid.dir/build.make src/grid/CMakeFiles/discretization_grid.dir/build
 .PHONY : discretization_grid/fast
 
 # Convenience name for target.
 src/grid/CMakeFiles/fft.dir/rule:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/grid/CMakeFiles/fft.dir/rule
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/grid/CMakeFiles/fft.dir/rule
 .PHONY : src/grid/CMakeFiles/fft.dir/rule
 
 # Convenience name for target.
@@ -229,12 +229,12 @@ fft: src/grid/CMakeFiles/fft.dir/rule
 
 # fast build rule for target.
 fft/fast:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/fft.dir/build.make src/grid/CMakeFiles/fft.dir/build
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/fft.dir/build.make src/grid/CMakeFiles/fft.dir/build
 .PHONY : fft/fast
 
 # Convenience name for target.
 src/grid/CMakeFiles/spectral.dir/rule:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/grid/CMakeFiles/spectral.dir/rule
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/grid/CMakeFiles/spectral.dir/rule
 .PHONY : src/grid/CMakeFiles/spectral.dir/rule
 
 # Convenience name for target.
@@ -243,12 +243,12 @@ spectral: src/grid/CMakeFiles/spectral.dir/rule
 
 # fast build rule for target.
 spectral/fast:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/spectral.dir/build.make src/grid/CMakeFiles/spectral.dir/build
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/spectral.dir/build.make src/grid/CMakeFiles/spectral.dir/build
 .PHONY : spectral/fast
 
 # Convenience name for target.
 src/grid/CMakeFiles/config_c.dir/rule:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/grid/CMakeFiles/config_c.dir/rule
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/grid/CMakeFiles/config_c.dir/rule
 .PHONY : src/grid/CMakeFiles/config_c.dir/rule
 
 # Convenience name for target.
@@ -257,12 +257,12 @@ config_c: src/grid/CMakeFiles/config_c.dir/rule
 
 # fast build rule for target.
 config_c/fast:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/config_c.dir/build.make src/grid/CMakeFiles/config_c.dir/build
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/config_c.dir/build.make src/grid/CMakeFiles/config_c.dir/build
 .PHONY : config_c/fast
 
 # Convenience name for target.
 src/grid/CMakeFiles/mech_base.dir/rule:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/grid/CMakeFiles/mech_base.dir/rule
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/grid/CMakeFiles/mech_base.dir/rule
 .PHONY : src/grid/CMakeFiles/mech_base.dir/rule
 
 # Convenience name for target.
@@ -271,12 +271,12 @@ mech_base: src/grid/CMakeFiles/mech_base.dir/rule
 
 # fast build rule for target.
 mech_base/fast:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/mech_base.dir/build.make src/grid/CMakeFiles/mech_base.dir/build
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/mech_base.dir/build.make src/grid/CMakeFiles/mech_base.dir/build
 .PHONY : mech_base/fast
 
 # Convenience name for target.
 src/grid/CMakeFiles/mech_solver_basic.dir/rule:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/grid/CMakeFiles/mech_solver_basic.dir/rule
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/grid/CMakeFiles/mech_solver_basic.dir/rule
 .PHONY : src/grid/CMakeFiles/mech_solver_basic.dir/rule
 
 # Convenience name for target.
@@ -285,12 +285,12 @@ mech_solver_basic: src/grid/CMakeFiles/mech_solver_basic.dir/rule
 
 # fast build rule for target.
 mech_solver_basic/fast:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/mech_solver_basic.dir/build.make src/grid/CMakeFiles/mech_solver_basic.dir/build
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/mech_solver_basic.dir/build.make src/grid/CMakeFiles/mech_solver_basic.dir/build
 .PHONY : mech_solver_basic/fast
 
 # Convenience name for target.
 src/grid/CMakeFiles/damask_grid_lib.dir/rule:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/grid/CMakeFiles/damask_grid_lib.dir/rule
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/grid/CMakeFiles/damask_grid_lib.dir/rule
 .PHONY : src/grid/CMakeFiles/damask_grid_lib.dir/rule
 
 # Convenience name for target.
@@ -299,7 +299,7 @@ damask_grid_lib: src/grid/CMakeFiles/damask_grid_lib.dir/rule
 
 # fast build rule for target.
 damask_grid_lib/fast:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/damask_grid_lib.dir/build.make src/grid/CMakeFiles/damask_grid_lib.dir/build
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/damask_grid_lib.dir/build.make src/grid/CMakeFiles/damask_grid_lib.dir/build
 .PHONY : damask_grid_lib/fast
 
 VTI.o: VTI.f90.o
@@ -307,7 +307,7 @@ VTI.o: VTI.f90.o
 
 # target to build an object file
 VTI.f90.o:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/VTI.dir/build.make src/grid/CMakeFiles/VTI.dir/VTI.f90.o
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/VTI.dir/build.make src/grid/CMakeFiles/VTI.dir/VTI.f90.o
 .PHONY : VTI.f90.o
 
 VTI.i: VTI.f90.i
@@ -315,7 +315,7 @@ VTI.i: VTI.f90.i
 
 # target to preprocess a source file
 VTI.f90.i:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/VTI.dir/build.make src/grid/CMakeFiles/VTI.dir/VTI.f90.i
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/VTI.dir/build.make src/grid/CMakeFiles/VTI.dir/VTI.f90.i
 .PHONY : VTI.f90.i
 
 VTI.s: VTI.f90.s
@@ -323,7 +323,7 @@ VTI.s: VTI.f90.s
 
 # target to generate assembly for a file
 VTI.f90.s:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/VTI.dir/build.make src/grid/CMakeFiles/VTI.dir/VTI.f90.s
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/VTI.dir/build.make src/grid/CMakeFiles/VTI.dir/VTI.f90.s
 .PHONY : VTI.f90.s
 
 base64.o: base64.f90.o
@@ -331,7 +331,7 @@ base64.o: base64.f90.o
 
 # target to build an object file
 base64.f90.o:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/base64.dir/build.make src/grid/CMakeFiles/base64.dir/base64.f90.o
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/base64.dir/build.make src/grid/CMakeFiles/base64.dir/base64.f90.o
 .PHONY : base64.f90.o
 
 base64.i: base64.f90.i
@@ -339,7 +339,7 @@ base64.i: base64.f90.i
 
 # target to preprocess a source file
 base64.f90.i:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/base64.dir/build.make src/grid/CMakeFiles/base64.dir/base64.f90.i
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/base64.dir/build.make src/grid/CMakeFiles/base64.dir/base64.f90.i
 .PHONY : base64.f90.i
 
 base64.s: base64.f90.s
@@ -347,7 +347,7 @@ base64.s: base64.f90.s
 
 # target to generate assembly for a file
 base64.f90.s:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/base64.dir/build.make src/grid/CMakeFiles/base64.dir/base64.f90.s
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/base64.dir/build.make src/grid/CMakeFiles/base64.dir/base64.f90.s
 .PHONY : base64.f90.s
 
 config.o: config.cpp.o
@@ -355,7 +355,7 @@ config.o: config.cpp.o
 
 # target to build an object file
 config.cpp.o:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/config_c.dir/build.make src/grid/CMakeFiles/config_c.dir/config.cpp.o
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/config_c.dir/build.make src/grid/CMakeFiles/config_c.dir/config.cpp.o
 .PHONY : config.cpp.o
 
 config.i: config.cpp.i
@@ -363,7 +363,7 @@ config.i: config.cpp.i
 
 # target to preprocess a source file
 config.cpp.i:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/config_c.dir/build.make src/grid/CMakeFiles/config_c.dir/config.cpp.i
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/config_c.dir/build.make src/grid/CMakeFiles/config_c.dir/config.cpp.i
 .PHONY : config.cpp.i
 
 config.s: config.cpp.s
@@ -371,7 +371,7 @@ config.s: config.cpp.s
 
 # target to generate assembly for a file
 config.cpp.s:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/config_c.dir/build.make src/grid/CMakeFiles/config_c.dir/config.cpp.s
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/config_c.dir/build.make src/grid/CMakeFiles/config_c.dir/config.cpp.s
 .PHONY : config.cpp.s
 
 damask_grid.o: damask_grid.cpp.o
@@ -379,7 +379,7 @@ damask_grid.o: damask_grid.cpp.o
 
 # target to build an object file
 damask_grid.cpp.o:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/damask_grid_lib.dir/build.make src/grid/CMakeFiles/damask_grid_lib.dir/damask_grid.cpp.o
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/damask_grid_lib.dir/build.make src/grid/CMakeFiles/damask_grid_lib.dir/damask_grid.cpp.o
 .PHONY : damask_grid.cpp.o
 
 damask_grid.i: damask_grid.cpp.i
@@ -387,7 +387,7 @@ damask_grid.i: damask_grid.cpp.i
 
 # target to preprocess a source file
 damask_grid.cpp.i:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/damask_grid_lib.dir/build.make src/grid/CMakeFiles/damask_grid_lib.dir/damask_grid.cpp.i
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/damask_grid_lib.dir/build.make src/grid/CMakeFiles/damask_grid_lib.dir/damask_grid.cpp.i
 .PHONY : damask_grid.cpp.i
 
 damask_grid.s: damask_grid.cpp.s
@@ -395,7 +395,7 @@ damask_grid.s: damask_grid.cpp.s
 
 # target to generate assembly for a file
 damask_grid.cpp.s:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/damask_grid_lib.dir/build.make src/grid/CMakeFiles/damask_grid_lib.dir/damask_grid.cpp.s
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/damask_grid_lib.dir/build.make src/grid/CMakeFiles/damask_grid_lib.dir/damask_grid.cpp.s
 .PHONY : damask_grid.cpp.s
 
 discretization_grid.o: discretization_grid.cpp.o
@@ -403,7 +403,7 @@ discretization_grid.o: discretization_grid.cpp.o
 
 # target to build an object file
 discretization_grid.cpp.o:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/discretization_grid.dir/build.make src/grid/CMakeFiles/discretization_grid.dir/discretization_grid.cpp.o
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/discretization_grid.dir/build.make src/grid/CMakeFiles/discretization_grid.dir/discretization_grid.cpp.o
 .PHONY : discretization_grid.cpp.o
 
 discretization_grid.i: discretization_grid.cpp.i
@@ -411,7 +411,7 @@ discretization_grid.i: discretization_grid.cpp.i
 
 # target to preprocess a source file
 discretization_grid.cpp.i:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/discretization_grid.dir/build.make src/grid/CMakeFiles/discretization_grid.dir/discretization_grid.cpp.i
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/discretization_grid.dir/build.make src/grid/CMakeFiles/discretization_grid.dir/discretization_grid.cpp.i
 .PHONY : discretization_grid.cpp.i
 
 discretization_grid.s: discretization_grid.cpp.s
@@ -419,7 +419,7 @@ discretization_grid.s: discretization_grid.cpp.s
 
 # target to generate assembly for a file
 discretization_grid.cpp.s:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/discretization_grid.dir/build.make src/grid/CMakeFiles/discretization_grid.dir/discretization_grid.cpp.s
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/discretization_grid.dir/build.make src/grid/CMakeFiles/discretization_grid.dir/discretization_grid.cpp.s
 .PHONY : discretization_grid.cpp.s
 
 fft.o: fft.cpp.o
@@ -427,7 +427,7 @@ fft.o: fft.cpp.o
 
 # target to build an object file
 fft.cpp.o:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/fft.dir/build.make src/grid/CMakeFiles/fft.dir/fft.cpp.o
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/fft.dir/build.make src/grid/CMakeFiles/fft.dir/fft.cpp.o
 .PHONY : fft.cpp.o
 
 fft.i: fft.cpp.i
@@ -435,7 +435,7 @@ fft.i: fft.cpp.i
 
 # target to preprocess a source file
 fft.cpp.i:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/fft.dir/build.make src/grid/CMakeFiles/fft.dir/fft.cpp.i
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/fft.dir/build.make src/grid/CMakeFiles/fft.dir/fft.cpp.i
 .PHONY : fft.cpp.i
 
 fft.s: fft.cpp.s
@@ -443,7 +443,7 @@ fft.s: fft.cpp.s
 
 # target to generate assembly for a file
 fft.cpp.s:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/fft.dir/build.make src/grid/CMakeFiles/fft.dir/fft.cpp.s
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/fft.dir/build.make src/grid/CMakeFiles/fft.dir/fft.cpp.s
 .PHONY : fft.cpp.s
 
 mech_base.o: mech_base.cpp.o
@@ -451,7 +451,7 @@ mech_base.o: mech_base.cpp.o
 
 # target to build an object file
 mech_base.cpp.o:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/mech_base.dir/build.make src/grid/CMakeFiles/mech_base.dir/mech_base.cpp.o
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/mech_base.dir/build.make src/grid/CMakeFiles/mech_base.dir/mech_base.cpp.o
 .PHONY : mech_base.cpp.o
 
 mech_base.i: mech_base.cpp.i
@@ -459,7 +459,7 @@ mech_base.i: mech_base.cpp.i
 
 # target to preprocess a source file
 mech_base.cpp.i:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/mech_base.dir/build.make src/grid/CMakeFiles/mech_base.dir/mech_base.cpp.i
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/mech_base.dir/build.make src/grid/CMakeFiles/mech_base.dir/mech_base.cpp.i
 .PHONY : mech_base.cpp.i
 
 mech_base.s: mech_base.cpp.s
@@ -467,7 +467,7 @@ mech_base.s: mech_base.cpp.s
 
 # target to generate assembly for a file
 mech_base.cpp.s:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/mech_base.dir/build.make src/grid/CMakeFiles/mech_base.dir/mech_base.cpp.s
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/mech_base.dir/build.make src/grid/CMakeFiles/mech_base.dir/mech_base.cpp.s
 .PHONY : mech_base.cpp.s
 
 mech_solver_basic.o: mech_solver_basic.cpp.o
@@ -475,7 +475,7 @@ mech_solver_basic.o: mech_solver_basic.cpp.o
 
 # target to build an object file
 mech_solver_basic.cpp.o:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/mech_solver_basic.dir/build.make src/grid/CMakeFiles/mech_solver_basic.dir/mech_solver_basic.cpp.o
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/mech_solver_basic.dir/build.make src/grid/CMakeFiles/mech_solver_basic.dir/mech_solver_basic.cpp.o
 .PHONY : mech_solver_basic.cpp.o
 
 mech_solver_basic.i: mech_solver_basic.cpp.i
@@ -483,7 +483,7 @@ mech_solver_basic.i: mech_solver_basic.cpp.i
 
 # target to preprocess a source file
 mech_solver_basic.cpp.i:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/mech_solver_basic.dir/build.make src/grid/CMakeFiles/mech_solver_basic.dir/mech_solver_basic.cpp.i
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/mech_solver_basic.dir/build.make src/grid/CMakeFiles/mech_solver_basic.dir/mech_solver_basic.cpp.i
 .PHONY : mech_solver_basic.cpp.i
 
 mech_solver_basic.s: mech_solver_basic.cpp.s
@@ -491,7 +491,7 @@ mech_solver_basic.s: mech_solver_basic.cpp.s
 
 # target to generate assembly for a file
 mech_solver_basic.cpp.s:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/mech_solver_basic.dir/build.make src/grid/CMakeFiles/mech_solver_basic.dir/mech_solver_basic.cpp.s
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/mech_solver_basic.dir/build.make src/grid/CMakeFiles/mech_solver_basic.dir/mech_solver_basic.cpp.s
 .PHONY : mech_solver_basic.cpp.s
 
 spectral.o: spectral.cpp.o
@@ -499,7 +499,7 @@ spectral.o: spectral.cpp.o
 
 # target to build an object file
 spectral.cpp.o:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/spectral.dir/build.make src/grid/CMakeFiles/spectral.dir/spectral.cpp.o
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/spectral.dir/build.make src/grid/CMakeFiles/spectral.dir/spectral.cpp.o
 .PHONY : spectral.cpp.o
 
 spectral.i: spectral.cpp.i
@@ -507,7 +507,7 @@ spectral.i: spectral.cpp.i
 
 # target to preprocess a source file
 spectral.cpp.i:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/spectral.dir/build.make src/grid/CMakeFiles/spectral.dir/spectral.cpp.i
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/spectral.dir/build.make src/grid/CMakeFiles/spectral.dir/spectral.cpp.i
 .PHONY : spectral.cpp.i
 
 spectral.s: spectral.cpp.s
@@ -515,7 +515,7 @@ spectral.s: spectral.cpp.s
 
 # target to generate assembly for a file
 spectral.cpp.s:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/spectral.dir/build.make src/grid/CMakeFiles/spectral.dir/spectral.cpp.s
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/spectral.dir/build.make src/grid/CMakeFiles/spectral.dir/spectral.cpp.s
 .PHONY : spectral.cpp.s
 
 zlib.o: zlib.f90.o
@@ -523,7 +523,7 @@ zlib.o: zlib.f90.o
 
 # target to build an object file
 zlib.f90.o:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/zlib.dir/build.make src/grid/CMakeFiles/zlib.dir/zlib.f90.o
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/zlib.dir/build.make src/grid/CMakeFiles/zlib.dir/zlib.f90.o
 .PHONY : zlib.f90.o
 
 zlib.i: zlib.f90.i
@@ -531,7 +531,7 @@ zlib.i: zlib.f90.i
 
 # target to preprocess a source file
 zlib.f90.i:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/zlib.dir/build.make src/grid/CMakeFiles/zlib.dir/zlib.f90.i
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/zlib.dir/build.make src/grid/CMakeFiles/zlib.dir/zlib.f90.i
 .PHONY : zlib.f90.i
 
 zlib.s: zlib.f90.s
@@ -539,7 +539,7 @@ zlib.s: zlib.f90.s
 
 # target to generate assembly for a file
 zlib.f90.s:
-	cd /home/snkr/DAMASK && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/zlib.dir/build.make src/grid/CMakeFiles/zlib.dir/zlib.f90.s
+	cd /home/snkr/solver_integrated && $(MAKE) $(MAKESILENT) -f src/grid/CMakeFiles/zlib.dir/build.make src/grid/CMakeFiles/zlib.dir/zlib.f90.s
 .PHONY : zlib.f90.s
 
 # Help Target
@@ -605,7 +605,7 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/snkr/DAMASK && $(CMAKE_COMMAND) -P /home/snkr/DAMASK/CMakeFiles/VerifyGlobs.cmake
-	cd /home/snkr/DAMASK && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/snkr/solver_integrated && $(CMAKE_COMMAND) -P /home/snkr/solver_integrated/CMakeFiles/VerifyGlobs.cmake
+	cd /home/snkr/solver_integrated && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

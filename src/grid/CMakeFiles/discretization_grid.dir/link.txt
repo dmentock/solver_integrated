@@ -1,0 +1,2 @@
+/usr/bin/ar qc libdiscretization_grid.a CMakeFiles/discretization_grid.dir/discretization_grid.cpp.o
+/usr/bin/ranlib libdiscretization_grid.a

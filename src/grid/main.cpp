@@ -32,12 +32,13 @@ int main(int argc, char *argv[])
   //                               ip_coords0.data(), ip_coords0.dimension(1),
   //                               node_coords0.data(), node_coords0.dimension(1),
   //                               shared_nodes_begin);
+  std::cout << std::fixed << std::setprecision(16);
   Config config;
   config.numerics = config.parse_numerics_yaml("examples/grid/numerics.yaml");
   config.load_steps = config.parse_load_yaml("examples/grid/tensionX.yaml", config.fields);
   config.vti_file = config.read_file("examples/grid/test_2_2x1x1.vti");
 
-  cout << "oke1 " << config.vti_file << endl;
+  // cout << "oke1 " << config.vti_file << endl;
 
   materialpoint_initBase();
   DiscretizationGrid grid_;
@@ -46,21 +47,21 @@ int main(int argc, char *argv[])
 
 
 
-  cout << "oke2" << endl;
+  // cout << "oke2" << endl;
 
   Spectral spectral;
   spectral.init(0, grid_);
-  cout << "oke3" << endl;
+  // cout << "oke3" << endl;
 
   DamaskGrid damask_grid;
   damask_grid.init(config, grid_, spectral);
-  cout << "oke4" << endl;
+  // cout << "oke4" << endl;
 
   int stag_it_max = 10;
   int max_cut_back = 3;
 
   damask_grid.loop_over_loadcase(config.load_steps, stag_it_max, max_cut_back);
-  cout << "oke5" << endl;
+  // cout << "oke5" << endl;
 
   return 0;
 }

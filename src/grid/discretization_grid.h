@@ -48,7 +48,7 @@ public:
   std::array<double, 3> scaled_geom_size;
 
   // // fourier field dimensions
-  int cells0_reduced = cells[0]/2+1;
+  int cells0_reduced;
   int cells1_tensor;
   int cells1_offset_tensor;
 

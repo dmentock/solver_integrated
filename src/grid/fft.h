@@ -47,10 +47,12 @@ public:
 
   template <typename TensorType>
   Tensor<double, Rank> backward(TensorType* field_fourier_, double &wgt) {
+    // PERFORMANCE TODO: really necessary? Compiler may skip those actions automatically
     if (field_fourier_->data() != field_fourier->data()) {
       field_fourier->slice(indices_values_start, indices_values_extents_fourier) = *field_fourier_;
     }
     fftw_mpi_execute_dft_c2r(plan_back, field_fourier_fftw, field_real->data());
+
     TensorMap<Tensor<double, Rank>> field_real_map = *field_real;
     Tensor<double, Rank> field_real_ = field_real_map * wgt;
     return field_real_.slice(indices_values_start, indices_values_extents_real);

@@ -14,6 +14,7 @@ void DiscretizationGrid::init(bool restart, std::string& vti_file_content) {
   if (world_rank == 0) {
     VTI_readCellsSizeOrigin(vti_file_content, cells, geom_size, origin);
     n_cells_global = cells[0] * cells[1] * cells[2];
+    cells0_reduced = cells[0]/2+1;
 
     std::string label = "material";
     material_at_global = VTI_readDataset_int(vti_file_content, label, cells);

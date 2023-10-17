@@ -11,7 +11,6 @@ module phase
   use polynomials
   use tables
   use IO
-  use tensor_printer
   use config
   use material
   use result
@@ -20,6 +19,7 @@ module phase
   use parallelization
   use HDF5
   use HDF5_utilities
+  use tensor_printer
 
   implicit none(type,external)
   private
@@ -354,21 +354,6 @@ module phase
 
   end interface
 
-
-#if __INTEL_COMPILER >= 1900
-  public :: &
-    prec, &
-    math, &
-    rotations, &
-    IO, &
-    config, &
-    material, &
-    result, &
-    crystal, &
-    discretization, &
-    HDF5_utilities
-#endif
-
   public :: &
     phase_init, &
     phase_homogenizedC66, &
@@ -569,7 +554,6 @@ subroutine crystallite_init()
 
   phases => config_material%get_dict('phase')
 
-  !$OMP PARALLEL DO PRIVATE(ce,ph,en)
   do el = 1, discretization_Nelems
     do ip = 1, discretization_nIPs
       ce = (el-1)*discretization_nIPs + ip
@@ -581,7 +565,6 @@ subroutine crystallite_init()
      end do
     end do
   end do
-  !$OMP END PARALLEL DO
 
 
 end subroutine crystallite_init

@@ -26,7 +26,7 @@ public:
     int max_cut_back = 3;
 
     int itmin = 1;
-    int itmax = 250;
+    int itmax = 100;
     int memory_efficient = 1;
     int divergence_correction = 2;
     bool update_gamma = false;
@@ -91,8 +91,10 @@ public:
   std::vector<LoadStep> load_steps;
   std::string vti_file;
 
+  int n_total_load_steps = 0;
+
   static NumGridParams parse_numerics_yaml(std::string yamlFilePath);
-  static std::vector<LoadStep> parse_load_yaml(std::string yamlFilePath,
+  std::vector<LoadStep> parse_load_yaml(std::string yamlFilePath,
                               std::map<std::string, std::string>& fields);
   static BoundaryCondition parse_boundary_condition(YAML::Node& mechanicalNode, std::vector<std::string>& key_variations);
   static std::string read_file(const std::string& file_path);

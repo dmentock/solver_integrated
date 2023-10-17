@@ -729,8 +729,7 @@ subroutine panel(paneltype,ID,msg,ext_msg,label1,ID1,label2,ID2)
 
   if (paneltype == 'error')   msg_ = achar(27)//'[31m'//trim(msg)//achar(27)//'[0m'
   if (paneltype == 'warning') msg_ = achar(27)//'[33m'//trim(msg)//achar(27)//'[0m'
-  !$OMP CRITICAL (write2out)
-  write(IO_STDERR,'(/,a)')                ' ┌'//DIVIDER//'┐'
+    write(IO_STDERR,'(/,a)')                ' ┌'//DIVIDER//'┐'
   write(formatString,'(a,i2,a)') '(a,24x,a,1x,i0,',max(1,panelwidth-24-len_trim(paneltype)-1-len_trim(ID_)),'x,a)'
   write(IO_STDERR,formatString)          ' │',trim(paneltype),ID,                                   '│'
   write(IO_STDERR,'(a)')                  ' ├'//DIVIDER//'┤'
@@ -756,8 +755,7 @@ subroutine panel(paneltype,ID,msg,ext_msg,label1,ID1,label2,ID2)
   write(IO_STDERR,formatString)          ' │',                                                     '│'
   write(IO_STDERR,'(a)')                  ' └'//DIVIDER//'┘'
   flush(IO_STDERR)
-  !$OMP END CRITICAL (write2out)
-
+  
 end subroutine panel
 
 

@@ -229,6 +229,9 @@ subroutine homogenization_mechanical_response(Delta_t,cell_start,cell_end) bind(
     doneAndHappy
 
   print *, ">> homogenization_mechanical_response", cell_start,cell_end
+  print *, "homogenization_F", homogenization_F
+  ! print *, "material_entry_homogenization", material_entry_homogenization
+  ! print *, "material_ID_homogenization", material_ID_homogenization
   print *, "material_entry_homogenization", material_entry_homogenization
   print *, "material_ID_homogenization", material_ID_homogenization
   do ce = cell_start, cell_end
@@ -239,14 +242,14 @@ subroutine homogenization_mechanical_response(Delta_t,cell_start,cell_end) bind(
     call phase_restore(ce,.false.) ! wrong name (is more a forward function)
     if (homogState(ho)%sizeState > 0)  homogState(ho)%state(:,en) = homogState(ho)%state0(:,en)
     if (damageState_h(ho)%sizeState > 0) damageState_h(ho)%state(:,en) = damageState_h(ho)%state0(:,en)
-    print *, "ce homogState(ho)%sizeState state state0", ce, homogState(ho)%sizeState, homogState(ho)%state(:,en), homogState(ho)%state0(:,en)
+    ! print *, "ce homogState(ho)%sizeState state state0", ce, homogState(ho)%sizeState, homogState(ho)%state(:,en), homogState(ho)%state0(:,en)
 
     call damage_partition(ce)
-    print *, "after"
+    ! print *, "after"
     doneAndHappy = [.false.,.true.]
-    print *, "hah", terminallyIll, doneAndHappy(1)
+    ! print *, "hah", terminallyIll, doneAndHappy(1)
     convergenceLooping: do while (.not. (terminallyIll .or. doneAndHappy(1)))
-      print *, "ce homogenization_F(1:3,1:3,ce)", ce, homogenization_F(1:3,1:3,ce)
+      ! print *, "ce homogenization_F(1:3,1:3,ce)", ce, homogenization_F(1:3,1:3,ce)
       call mechanical_partition(homogenization_F(1:3,1:3,ce),ce)
       converged = all([(phase_mechanical_constitutive(Delta_t,co,ce),co=1,homogenization_Nconstituents(ho))])
       if (converged) then
@@ -257,11 +260,11 @@ subroutine homogenization_mechanical_response(Delta_t,cell_start,cell_end) bind(
         print *, "doneAndHappy"
         doneAndHappy = [.true.,.false.]
       end if
-      print *, "cloop end"
+      ! print *, "cloop end"
     end do convergenceLooping
 
     converged = converged .and. all([(phase_damage_constitutive(Delta_t,co,ce),co=1,homogenization_Nconstituents(ho))])
-    print *, "conv", converged
+    ! print *, "conv", converged
     if (.not. converged) then
       if (.not. terminallyIll) print*, ' Cell ', ce, ' terminally ill'
       terminallyIll = .true.
@@ -283,7 +286,6 @@ subroutine homogenization_thermal_response(Delta_t,cell_start,cell_end) bind(C, 
     co, ce, ho
 
 
-  !$OMP PARALLEL DO PRIVATE(ho)
   do ce = cell_start, cell_end
     if (terminallyIll) continue
     ho = material_ID_homogenization(ce)
@@ -294,7 +296,6 @@ subroutine homogenization_thermal_response(Delta_t,cell_start,cell_end) bind(C, 
       end if
     end do
   end do
-  !$OMP END PARALLEL DO
 
 end subroutine homogenization_thermal_response
 
@@ -311,25 +312,33 @@ subroutine homogenization_mechanical_response2(Delta_t,FEsolving_execIP,FEsolvin
     el, &                                                                                           !< element number
     co, ce, ho
 
-  print *, "FEsolving_execElem", FEsolving_execElem
-  print *, "FEsolving_execIP", FEsolving_execIP
-  print *, "discretization_nIPs", discretization_nIPs
-  print *, "homogenization_Nconstituents", homogenization_Nconstituents
-  print *, "material_ID_homogenization", material_ID_homogenization
+  print *, ">> homogenization_mechanical_response2"
+  print *, "homogenization_P", homogenization_P
+  ! print *, "FEsolving_execElem", FEsolving_execElem
+  ! print *, "FEsolving_execIP", FEsolving_execIP
+  ! print *, "discretization_nIPs", discretization_nIPs
+  ! print *, "homogenization_Nconstituents", homogenization_Nconstituents
+  ! print *, "material_ID_homogenization", material_ID_homogenization
 
-  !$OMP PARALLEL DO PRIVATE(ho,ce)  
-  elementLooping3: do el = FEsolving_execElem(1),FEsolving_execElem(2)
+    elementLooping3: do el = FEsolving_execElem(1),FEsolving_execElem(2)
     IpLooping3: do ip = FEsolving_execIP(1),FEsolving_execIP(2)
       ce = (el-1)*discretization_nIPs + ip
       ho = material_ID_homogenization(ce)
+      print *, "ce", ce
+      print *, "ho", ho
       do co = 1, homogenization_Nconstituents(ho)
+        print *, "gege",  el, ip, co, homogenization_P
         call crystallite_orientations(co,ip,el)
       end do
+      print *, "oy",  el, ip, homogenization_P
+
       call mechanical_homogenize(Delta_t,ce)
+      print *, "aw",  el, ip, homogenization_P
     end do IpLooping3
   end do elementLooping3
-  !$OMP END PARALLEL DO
-
+  print *, "homogenization_P", homogenization_P
+  print *, "homogenization_F", homogenization_F
+  print *, "<< homogenization_mechanical_response2"
 
 end subroutine homogenization_mechanical_response2
 
@@ -376,12 +385,14 @@ subroutine homogenization_forward
 
   integer :: ho
 
-
+  print *, ">> homogenization_forward", homogenization_F
   do ho = 1, size(material_name_homogenization)
     homogState (ho)%state0 = homogState (ho)%state
     if (damageState_h(ho)%sizeState > 0) &
       damageState_h(ho)%state0 = damageState_h(ho)%state
   end do
+  print *, "<< homogenization_forward", homogenization_F
+
 
 end subroutine homogenization_forward
 

@@ -37,11 +37,11 @@ public:
 
   void init(Config& config, DiscretizationGrid& grid_, Spectral& spectral);
   void loop_over_loadcase(std::vector<Config::LoadStep> load_steps, int stag_it_max, int max_cut_back);
-  virtual bool solve_fields(SolutionStates& solution_states, double& Delta_t, std::string& inc_info, int& stag_it_max);
+  virtual bool solve_fields(SolutionStates& solution_states, double& delta_t, std::string& inc_info, int& stag_it_max);
   virtual void forward_fields(Config::LoadStep& load_step, 
                               bool& cut_back, bool& guess, 
-                              double& Delta_t, double& Delta_t_prev, double& t_remaining);
-  static double forward_time(double& Delta_t, double& Delta_t_prev, Config::LoadStep& load_step,
+                              double& delta_t, double& delta_t_prev, double& t_remaining);
+  static double forward_time(double& delta_t, double& delta_t_prev, Config::LoadStep& load_step,
                                 int& inc, int& sub_step_factor, int& cut_back_level);
 
 
@@ -54,6 +54,7 @@ public:
 
 private:
   int world_rank;
+  int n_total_load_steps;
 
 };
 #endif // DAMASK_GRID_H
