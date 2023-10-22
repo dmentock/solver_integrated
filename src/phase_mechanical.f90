@@ -437,16 +437,16 @@ function integrateStress(F,Fp0,Fi0,Delta_t,ph,en) result(broken)
 
   print *, ">> integrateStresss"
 
-  print *, "F",F
-  print *, "Fp0",Fp0
-  print *, "Fi0",Fi0
-  print *, "Delta_t",Delta_t
-  print *, "ph",ph
-  print *, "en",en
+  ! print *, "F",F
+  ! print *, "Fp0",Fp0
+  ! print *, "Fi0",Fi0
+  ! print *, "Delta_t",Delta_t
+  ! print *, "ph",ph
+  ! print *, "en",en
 
   broken = .true.
   call plastic_dependentState(ph,en)
-  print *, "phase_mechanical_Lp(ph)%data1 integrateStresss", phase_mechanical_Lp(ph)%data
+  ! print *, "phase_mechanical_Lp(ph)%data1 integrateStresss", phase_mechanical_Lp(ph)%data
   Lpguess = phase_mechanical_Lp(ph)%data(1:3,1:3,en)                                                ! take as first guess
   Liguess = phase_mechanical_Li(ph)%data(1:3,1:3,en)                                                ! take as first guess
 
@@ -457,7 +457,7 @@ function integrateStress(F,Fp0,Fi0,Delta_t,ph,en) result(broken)
   if (error) return ! error
 
   A = matmul(F,invFp_current)                                                                       ! intermediate tensor needed later to calculate dFe_dLp
-  print *, "AA", A
+  ! print *, "AA", A
   jacoCounterLi  = 0
   steplengthLi   = 1.0_pREAL
   residuumLi_old = 0.0_pREAL
@@ -482,16 +482,16 @@ function integrateStress(F,Fp0,Fi0,Delta_t,ph,en) result(broken)
     NiterationStressLp = 0
     LpLoop: do
       NiterationStressLp = NiterationStressLp + 1
-      print *, "NiterationStressLp", NiterationStressLp
+      ! print *, "NiterationStressLp", NiterationStressLp
       if (NiterationStressLp>num%nStress_Lp) return ! error
       ! print *, "NiterationStressLi", NiterationStressLi
       ! print *, "NiterationStressLp", NiterationStressLp
       ! print *, "Delta_t", Delta_t
       ! print *, "Lpguess", Lpguess
-      print *, "B1", B
-      print *, "S1", S
-      print *, "Delta_t", Delta_t
-      print *, "Lpguess1", Lpguess
+      ! print *, "B1", B
+      ! print *, "S1", S
+      ! print *, "Delta_t", Delta_t
+      ! print *, "Lpguess1", Lpguess
       B  = math_I3 - Delta_t*Lpguess
       Fe = matmul(matmul(A,B), invFi_new)
       call phase_hooke_SandItsTangents(S, dS_dFe, dS_dFi, &
@@ -500,15 +500,15 @@ function integrateStress(F,Fp0,Fi0,Delta_t,ph,en) result(broken)
       call plastic_LpAndItsTangents(Lp_constitutive, dLp_dS, dLp_dFi, &
                                          S, Fi_new, ph,en)
 
-      print *, "B2", B
-      print *, "S2", S
+      ! print *, "B2", B
+      ! print *, "S2", S
       !* update current residuum and check for convergence of loop
       atol_Lp = max(num%rtol_Lp * max(norm2(Lpguess),norm2(Lp_constitutive)), &                     ! absolute tolerance from largest acceptable relative error
                     num%atol_Lp)                                                                    ! minimum lower cutoff
-      print *, "Lp_constitutive", Lp_constitutive
+      ! print *, "Lp_constitutive", Lp_constitutive
 
       residuumLp = Lpguess - Lp_constitutive
-      print *, "Lpguess2", Lpguess
+      ! print *, "Lpguess2", Lpguess
 
       if (any(IEEE_is_NaN(residuumLp))) then
         return ! error
@@ -524,7 +524,7 @@ function integrateStress(F,Fp0,Fi0,Delta_t,ph,en) result(broken)
                      + deltaLp * stepLengthLp
         cycle LpLoop
       end if
-      print *, "Lpguess3", Lpguess
+      ! print *, "Lpguess3", Lpguess
 
       calculateJacobiLp: if (mod(jacoCounterLp, num%iJacoLpresiduum) == 0) then
         jacoCounterLp = jacoCounterLp + 1
@@ -536,8 +536,8 @@ function integrateStress(F,Fp0,Fi0,Delta_t,ph,en) result(broken)
                  - math_3333to99(math_mul3333xx3333(math_mul3333xx3333(dLp_dS,dS_dFe),dFe_dLp))
 
         temp_9 = math_33to9(residuumLp)
-        print *, "residuumLp", residuumLp
-        print *, "temp_9", temp_9
+        ! print *, "residuumLp", residuumLp
+        ! print *, "temp_9", temp_9
 
         call dgesv(9,1,dRLp_dLp,9,devNull_9,temp_9,9,ierr)                                          ! solve dRLp/dLp * delta Lp = -res for delta Lp
         print *, "temp_9 1", temp_9
@@ -545,15 +545,15 @@ function integrateStress(F,Fp0,Fi0,Delta_t,ph,en) result(broken)
         if (ierr /= 0) return ! error
         deltaLp = - math_9to33(temp_9)
       end if calculateJacobiLp
-    print *, "deltaLp", deltaLp
-    print *, "steplengthLp", steplengthLp
+    ! print *, "deltaLp", deltaLp
+    ! print *, "steplengthLp", steplengthLp
 
       Lpguess = Lpguess &
               + deltaLp * steplengthLp
-    print *, "Lpguess4", Lpguess
+    ! print *, "Lpguess4", Lpguess
 
     end do LpLoop
-    print *, "Lpguess5", Lpguess
+    ! print *, "Lpguess5", Lpguess
 
     call phase_LiAndItsTangents(Li_constitutive, dLi_dS, dLi_dFi, &
                                 S, Fi_new, ph,en)
@@ -607,14 +607,14 @@ function integrateStress(F,Fp0,Fi0,Delta_t,ph,en) result(broken)
   if (error) return ! error
   ! print *, "F", F
   ! print *, "invFp_new", invFp_new
-  print *, "MOdifying"
-  print *, "F", F
-  print *, "invFp_current", invFp_current 
+  ! print *, "MOdifying"
+  ! print *, "F", F
+  ! print *, "invFp_current", invFp_current 
 
   
   phase_mechanical_P(ph)%data(1:3,1:3,en)  = matmul(matmul(F,invFp_new),matmul(S,transpose(invFp_new)))
   phase_mechanical_S(ph)%data(1:3,1:3,en)  = S
-  print *, "phase_mechanical_Lp(ph)%data2 integrate_stress", phase_mechanical_Lp(ph)%data
+  ! print *, "phase_mechanical_Lp(ph)%data2 integrate_stress", phase_mechanical_Lp(ph)%data
   phase_mechanical_Lp(ph)%data(1:3,1:3,en) = Lpguess
   phase_mechanical_Li(ph)%data(1:3,1:3,en) = Liguess
   phase_mechanical_Fp(ph)%data(1:3,1:3,en) = Fp_new / math_det33(Fp_new)**(1.0_pREAL/3.0_pREAL)    ! regularize
@@ -1186,8 +1186,8 @@ module subroutine mechanical_restore(ce,includeL)
 
     ph = material_ID_phase(co,ce)
     en = material_entry_phase(co,ce)
-    print *, "ph", ph
-    print *, "phase_mechanical_Lp(ph)%data1 mechanical_restoree", phase_mechanical_Lp(ph)%data
+    ! print *, "ph", ph
+    ! print *, "phase_mechanical_Lp(ph)%data1 mechanical_restoree", phase_mechanical_Lp(ph)%data
 
     if (includeL) then
 
@@ -1200,9 +1200,10 @@ module subroutine mechanical_restore(ce,includeL)
     phase_mechanical_S(ph)%data(1:3,1:3,en)    = phase_mechanical_S0(ph)%data(1:3,1:3,en)
 
     plasticState(ph)%state(:,en) = plasticState(ph)%State0(:,en)
-    print *, "phase_mechanical_Lp(ph)%data2 mechanical_restore", phase_mechanical_Lp(ph)%data
+    ! print *, "phase_mechanical_Lp(ph)%data2 mechanical_restore", phase_mechanical_Lp(ph)%data
 
   end do
+  print *, "<< mechanical_restore"
 
 end subroutine mechanical_restore
 
@@ -1443,10 +1444,10 @@ module function phase_P(co,ce) result(P)
   ! print *, "phase_mechanical_P(material_ID_phase(co,ce))%data", phase_mechanical_P(material_ID_phase(co,ce))%data
   ! print *, "phase_mechanical_P full", phase_mechanical_P(material_ID_phase(co,ce))%data(1:3,1:3,material_entry_phase(co,ce))
   P = phase_mechanical_P(material_ID_phase(co,ce))%data(1:3,1:3,material_entry_phase(co,ce))
-  print *, "material_ID_phase(co,ce)", material_ID_phase(co,ce)
-  print *, "material_entry_phase(co,ce)", material_entry_phase(co,ce)
-  print *, "phase_mechanical_P", phase_mechanical_P(material_ID_phase(co,ce))%data
-  call p2r("P", P)
+  ! print *, "material_ID_phase(co,ce)", material_ID_phase(co,ce)
+  ! print *, "material_entry_phase(co,ce)", material_entry_phase(co,ce)
+  ! print *, "phase_mechanical_P", phase_mechanical_P(material_ID_phase(co,ce))%data
+  ! call p2r("P", P)
   print *, "<< phase_P"
 
 end function phase_P

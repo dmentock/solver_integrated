@@ -104,7 +104,7 @@ void MechSolverBasic::init() {
 
 Config::SolutionState MechSolverBasic::calculate_solution(std::string& inc_info_) {
 
-  cout << " >> calculate_solution" << endl;
+  // cout << " > > calculate_solution" << endl;
   inc_info = inc_info_;
 
   Config::SolutionState solution;
@@ -113,22 +113,34 @@ Config::SolutionState MechSolverBasic::calculate_solution(std::string& inc_info_
   // update stiffness (and gamma operator)
   S = calculate_masked_compliance(C_volAvg, params.rot_bc_q, params.stress_mask);
   if (config.numerics.update_gamma) update_gamma(C_minMaxAvg);
-  cout << " solving" << endl;
+  // cout << " solving" << endl;
   ierr = SNESSolve(SNES_mechanical, NULL, F_PETSc);
   CHKERRABORT(PETSC_COMM_WORLD, ierr);
-  cout << " solved" << endl;
+  // cout << " solved" << endl;
   ierr = SNESGetConvergedReason(SNES_mechanical, &reason);
   CHKERRABORT(PETSC_COMM_WORLD, ierr);
-  cout << " converged" << endl;
+  // cout << " converged" << endl;
 
   solution.converged = reason > 0;
   solution.required_iterations = total_iter;
   solution.terminally_ill = *spectral.terminally_ill;
   *spectral.terminally_ill = false;
-  P_aim = P_av;
-  // print_f_raw("P_aim", P_aim);
 
-  cout << " << calculate_solution" << endl;
+  // print_f("P_aim11", P_aim);
+  // print_f("P_av", P_av);
+  // print_f("params.stress_mask", params.stress_mask);
+  Matrix<double, 3, 3> P_av_ = tensor_to_mat(P_av);
+  Matrix<double, 3, 3> P_aim_ = tensor_to_mat(P_aim);
+  P_aim_ = merge(P_av_, P_aim_, params.stress_mask);
+  P_aim = mat_to_tensor(P_aim_);
+
+  // print_f_raw("P_aim", P_aim);
+  // print_f("P_aim22", P_aim);
+
+  // cout << " < < calculate_solution" << endl;
+  // if (P_av(0,0) == 66111752.278324246) {
+  //   exit(001);
+  // }
 
   return solution;
 }
@@ -137,8 +149,8 @@ void MechSolverBasic::forward(bool cutBack, bool guess, double delta_t, double d
                               Config::BoundaryCondition& deformation_bc, 
                               Config::BoundaryCondition& stress_bc, 
                               Quaterniond& rot_bc_q) {
-  cout << " >> spectral forward" << endl;
-  cout << "F_aim 1 " << F_aim << endl;
+  // cout << " > > spectral forward" << endl;
+  // cout << "F_aim 1 " << F_aim << endl;
 
   PetscErrorCode ierr;
   PetscScalar *F_raw;
@@ -159,14 +171,14 @@ void MechSolverBasic::forward(bool cutBack, bool guess, double delta_t, double d
     C_volAvgLastInc = C_volAvg;
     C_minMaxAvgLastInc = C_minMaxAvg;
 
-    cout << "F_aim_dot1 " << F_aim_dot << endl;
+    // cout << "F_aim_dot1 " << F_aim_dot << endl;
     // merge(merge(.0_pREAL,(F_aim-F_aim_lastInc)/delta_t_old,stress_BC%mask),.0_pREAL,guess)
     Matrix<double, 3, 3> aim_diff = (F_aim-F_aim_last_inc)/delta_t;
     Matrix<double, 3, 3> stress_components = merge(0.0, aim_diff, stress_bc.mask);
     F_aim_dot = merge(stress_components, 0.0, guess);
     // F_aim_dot = (F_aim - F_aim_last_inc) / delta_t_old;
     // F_aim_dot = stress_bc.mask.select(F_aim_dot, 0.0);
-    cout << "F_aim_dot2 " << F_aim_dot << endl;
+    // cout << "F_aim_dot2 " << F_aim_dot << endl;
 
     if (!guess) F_aim_dot.setZero();
     F_aim_last_inc = F_aim;
@@ -174,31 +186,32 @@ void MechSolverBasic::forward(bool cutBack, bool guess, double delta_t, double d
     if (deformation_bc.type == "L") {
       F_aim_step = (deformation_bc.values - F_aim_last_inc) / t_remaining;
     } else if (deformation_bc.type == "dot_F") {
-      cout << "22" << endl;
+      // cout << "22" << endl;
       F_aim_step = deformation_bc.values;
     } else if (deformation_bc.type == "F") {
       F_aim_step = (deformation_bc.values - F_aim_last_inc) / t_remaining;
     }
-    cout << "F_aim_step " << F_aim_step << endl;
-    cout << "deformation_bc.mask " << deformation_bc.mask << endl;
+    // cout << "F_aim_step " << F_aim_step << endl;
+    // cout << "deformation_bc.mask " << deformation_bc.mask << endl;
     F_aim_dot += merge(0.0, F_aim_step, deformation_bc.mask);
-    cout << "F_aim_dot3 " << F_aim_dot << endl;
+    // cout << "F_aim_dot3 " << F_aim_dot << endl;
 
     *spectral.homogenization_F0 = F.reshape(Eigen::DSizes<Eigen::DenseIndex, 3>(3, 3, grid_.cells[0]*grid_.cells[1]*grid_.cells[2]));
 
     Tensor<double, 2> rotated = FortranUtilities::rotate_tensor2(rot_bc_q, F_aim_dot, true);
-    cout << "rotated " << F_aim_dot << endl;
+    // cout << "rotated " << F_aim_dot << endl;
     F_dot = calculate_rate (guess, F_last_inc, 
                             spectral.homogenization_F0->reshape(Eigen::array<int, 5>{3, 3, grid_.cells[0], grid_.cells[1], grid_.cells2}), 
                             delta_t_old, rotated);
     F_last_inc = spectral.homogenization_F0->reshape(Eigen::array<int, 5>{3, 3, grid_.cells[0], grid_.cells[1], grid_.cells2});
   }
-  cout << "F_aim_last_inc " << F_aim_last_inc << endl;
-  cout << "F_aim_dot4 " << F_aim_dot << endl;
-  cout << "delta_t " << delta_t << endl;
+  // cout << "F_aim_last_inc " << F_aim_last_inc << endl;
+  // cout << "F_aim_dot4 " << F_aim_dot << endl;
+  // cout << "delta_t " << delta_t << endl;
 
   F_aim = F_aim_last_inc + F_aim_dot * delta_t;
-  cout << "F_aim 2 " << F_aim << endl;
+  // cout << "F_aim 2 " << F_aim << endl;
+  print_f("P_aim1", P_aim);
 
   Eigen::Tensor<double, 2> zero_tensor(P_aim.dimensions());
   zero_tensor.setZero();
@@ -207,6 +220,7 @@ void MechSolverBasic::forward(bool cutBack, bool guess, double delta_t, double d
   } else {
     P_aim += mat_to_tensor(stress_bc.mask).select(mat_to_tensor(stress_bc.values), zero_tensor) * delta_t;
   }
+  print_f("P_aim2", P_aim);
 
   // cout << "F_aim bebe " << F_aim << endl;
   Tensor<double, 2> rotated = FortranUtilities::rotate_tensor2(rot_bc_q, F_aim);
@@ -223,7 +237,7 @@ void MechSolverBasic::forward(bool cutBack, bool guess, double delta_t, double d
   params.stress_mask = stress_bc.mask;
   params.rot_bc_q = rot_bc_q;
   params.delta_t = delta_t;
-  cout << " << spectral forward" << endl;
+  // cout << " < < spectral forward" << endl;
 } 
 
 void MechSolverBasic::update_coords() {
@@ -299,7 +313,7 @@ PetscErrorCode MechSolverBasic::converged(SNES snes_local,
 
 PetscErrorCode MechSolverBasic::form_residual(DMDALocalInfo* residual_subdomain, double*** F_ptr, double*** r_ptr, void *ctx) {
 
-  cout << " >> form_residual" << endl;
+  // cout << " > > form_residual" << endl;
   MechSolverBasic* mech_basic = static_cast<MechSolverBasic*>(ctx);
 
   TensorMap<Tensor<double, 5>> F(&F_ptr[0][0][0], 3, 3, mech_basic->grid_.cells[0], mech_basic->grid_.cells[1], mech_basic->grid_.cells2);
@@ -342,6 +356,11 @@ PetscErrorCode MechSolverBasic::form_residual(DMDALocalInfo* residual_subdomain,
   Matrix<double, 3, 3> delta_F_aim;
   f_math_mul3333xx33(mech_basic->S.data(), mech_basic->P_av.data(), delta_F_aim.data());
   mech_basic->F_aim = mech_basic->F_aim - delta_F_aim;
+
+  print_f("P_av", mech_basic->P_av);
+  print_f("P_aim", mech_basic->P_aim);
+  // print_f("stress_mask", mech_basic->params.stress_mask);
+
   Eigen::Matrix<double, 3, 3> full_err = 
     Eigen::Map<Eigen::Matrix<double, 3, 3>>(mech_basic->P_av.data(), 3, 3) - 
     Eigen::Map<Eigen::Matrix<double, 3, 3>>(mech_basic->P_aim.data(), 3, 3);
@@ -354,7 +373,7 @@ PetscErrorCode MechSolverBasic::form_residual(DMDALocalInfo* residual_subdomain,
   // print_f_map_raw("r", r);
   mech_basic->gamma_convolution(r, rotated);
   // print_f_map_raw("r", r);
-  cout << " << form_residual" << endl;
+  // cout << " < < form_residual" << endl;
 
   return 0;
 }

@@ -15,6 +15,8 @@ pkg_check_modules(PETSC REQUIRED PETSc<3.20.0)
 
 pkg_get_variable(CMAKE_Fortran_COMPILER PETSc fcompiler)
 pkg_get_variable(CMAKE_C_COMPILER PETSc ccompiler)
+pkg_get_variable(CMAKE_CXX_COMPILER PETSc cxxcompiler)
+
 
 # Solver determines name of project
 string(TOUPPER "${DAMASK_SOLVER}" DAMASK_SOLVER)

@@ -229,11 +229,11 @@ subroutine homogenization_mechanical_response(Delta_t,cell_start,cell_end) bind(
     doneAndHappy
 
   print *, ">> homogenization_mechanical_response", cell_start,cell_end
-  print *, "homogenization_F", homogenization_F
+  ! print *, "homogenization_F", homogenization_F
   ! print *, "material_entry_homogenization", material_entry_homogenization
   ! print *, "material_ID_homogenization", material_ID_homogenization
-  print *, "material_entry_homogenization", material_entry_homogenization
-  print *, "material_ID_homogenization", material_ID_homogenization
+  ! print *, "material_entry_homogenization", material_entry_homogenization
+  ! print *, "material_ID_homogenization", material_ID_homogenization
   do ce = cell_start, cell_end
 
     en = material_entry_homogenization(ce)
@@ -253,11 +253,11 @@ subroutine homogenization_mechanical_response(Delta_t,cell_start,cell_end) bind(
       call mechanical_partition(homogenization_F(1:3,1:3,ce),ce)
       converged = all([(phase_mechanical_constitutive(Delta_t,co,ce),co=1,homogenization_Nconstituents(ho))])
       if (converged) then
-        print *, "converged"
+        ! print *, "converged"
         doneAndHappy = mechanical_updateState(Delta_t,homogenization_F(1:3,1:3,ce),ce)
         converged = all(doneAndHappy)
       else
-        print *, "doneAndHappy"
+        ! print *, "doneAndHappy"
         doneAndHappy = [.true.,.false.]
       end if
       ! print *, "cloop end"
@@ -324,20 +324,20 @@ subroutine homogenization_mechanical_response2(Delta_t,FEsolving_execIP,FEsolvin
     IpLooping3: do ip = FEsolving_execIP(1),FEsolving_execIP(2)
       ce = (el-1)*discretization_nIPs + ip
       ho = material_ID_homogenization(ce)
-      print *, "ce", ce
-      print *, "ho", ho
+      ! print *, "ce", ce
+      ! print *, "ho", ho
       do co = 1, homogenization_Nconstituents(ho)
-        print *, "gege",  el, ip, co, homogenization_P
+        ! print *, "gege",  el, ip, co, homogenization_P
         call crystallite_orientations(co,ip,el)
       end do
-      print *, "oy",  el, ip, homogenization_P
+      ! print *, "oy",  el, ip, homogenization_P
 
       call mechanical_homogenize(Delta_t,ce)
-      print *, "aw",  el, ip, homogenization_P
+      ! print *, "aw",  el, ip, homogenization_P
     end do IpLooping3
   end do elementLooping3
-  print *, "homogenization_P", homogenization_P
-  print *, "homogenization_F", homogenization_F
+  ! print *, "homogenization_P", homogenization_P
+  ! print *, "homogenization_F", homogenization_F
   print *, "<< homogenization_mechanical_response2"
 
 end subroutine homogenization_mechanical_response2

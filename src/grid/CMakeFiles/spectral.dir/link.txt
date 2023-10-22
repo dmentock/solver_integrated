@@ -1,2 +1,0 @@
-/usr/bin/ar qc libspectral.a CMakeFiles/spectral.dir/spectral.cpp.o
-/usr/bin/ranlib libspectral.a

@@ -4,6 +4,7 @@ message(STATUS "Fortran compile flags: ${CMAKE_Fortran_FLAGS}")
 message(STATUS "C++ compile flags: ${CMAKE_CXX_FLAGS}")
 
 
+
 if(PROJECT_NAME STREQUAL "damask-grid")
     message("Making grid")
     set(executable-name "DAMASK_grid")
@@ -14,9 +15,15 @@ if(PROJECT_NAME STREQUAL "damask-grid")
                         ${PETSC_ARCH_DIR}/include
                         ${EIGEN3_INCLUDE_DIR})
 
-    find_library(MPI_C_LIBRARIES NAMES mpi PATHS "${PETSC_ARCH_DIR}/lib" NO_DEFAULT_PATH)
-    find_library(MPI_CXX_LIBRARIES NAMES mpicxx PATHS "${PETSC_ARCH_DIR}/lib" NO_DEFAULT_PATH)
+    # find_library(MPI_C_LIBRARIES NAMES mpi PATHS "${PETSC_ARCH_DIR}/lib" NO_DEFAULT_PATH)
+    # find_library(MPI_CXX_LIBRARIES NAMES mpicxx PATHS "${PETSC_ARCH_DIR}/lib" NO_DEFAULT_PATH)
 
+    set(LAPACK_LIBRARIES "${PETSC_ARCH_DIR}/lib/libflapack.a")
+    set(BLAS_LIBRARIES "${PETSC_ARCH_DIR}/lib/libfblas.a") # Adjust the name if different
+    message(STATUS "Using BLAS library: ${BLAS_LIBRARIES}")
+    message(STATUS "Using LAPACK library: ${LAPACK_LIBRARIES}")
+    
+    # find_package(LAPACK REQUIRED)
     link_directories(${PETSC_ARCH_DIR}/lib)
     find_package(yaml-cpp REQUIRED)
     find_library(FYAML_LIBRARY NAMES fyaml)
@@ -32,10 +39,11 @@ if(PROJECT_NAME STREQUAL "damask-grid")
     add_library(fortran_library OBJECT ${damask-sources} grid/base64.f90)
     # target_compile_options(fortran_library PRIVATE ${CMAKE_Fortran_FLAGS_${CMAKE_BUILD_TYPE}})
     target_link_libraries(fortran_library PUBLIC
+                          ${LAPACK_LIBRARIES}
+                          ${BLAS_LIBRARIES}
                           ${PETSC_ARCH_DIR}/lib/libpetsc.so
                           HDF5::HDF5
                           ${FYAML_LIBRARY}
-                          -llapack
                           OpenMP::OpenMP_CXX)
     message("CMAKE_Fortran_FLAGS_${CMAKE_BUILD_TYPE}: ${CMAKE_Fortran_FLAGS_${CMAKE_BUILD_TYPE}}")
 

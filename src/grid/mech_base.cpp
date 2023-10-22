@@ -86,8 +86,8 @@ void MechBase::base_update_coords(TensorMap<Tensor<double, 5>>& F, Tensor<double
   Tensor<double, 4> u_tilde_p_padded(3,grid_.cells[0],grid_.cells[1],grid_.cells2+2);
   u_tilde_p_padded.slice (Eigen::array<Eigen::Index, 4>({0, 0, 0, 1}),
                           Eigen::array<Eigen::Index, 4>({3, grid_.cells[0], grid_.cells[1], grid_.cells2})) = 
-  vectorfield_real.slice (Eigen::array<Eigen::Index, 4>({0, 0, 0, 0}),
-                          Eigen::array<Eigen::Index, 4>({3, grid_.cells[0], grid_.cells[1], grid_.cells2})) * spectral.wgt;
+    vectorfield_real.slice (Eigen::array<Eigen::Index, 4>({0, 0, 0, 0}),
+                            Eigen::array<Eigen::Index, 4>({3, grid_.cells[0], grid_.cells[1], grid_.cells2})) * spectral.wgt;
 
   // Pad cell center fluctuations along z-direction (needed when running MPI simulation)
   int c = 3 * grid_.cells[0] * grid_.cells[1]; // amount of data to transfer
@@ -224,7 +224,7 @@ Tensor<double, 5> MechBase::forward_field(double delta_t,
                                           Eigen::Matrix<double, 3, 3>* aim) {
 
   
-  cout << " >> base forward_field" << endl;
+  // cout << " > > base forward_field" << endl;
   // cout << "delta_t " << delta_t << endl;
   // print_f_raw("field_last_inc", field_last_inc);
   // print_f_raw("rate", rate);
@@ -264,7 +264,7 @@ Tensor<double, 5> MechBase::forward_field(double delta_t,
     }
   }
   // print_f_raw("forwarded_field", forwarded_field);
-  cout << " << base forward_field" << endl;
+  // cout << " < < base forward_field" << endl;
   return forwarded_field;
 }
 
@@ -322,7 +322,7 @@ Tensor<double, 4> MechBase::calculate_masked_compliance( Tensor<double, 4> &C,
 }
 
 double MechBase::calculate_divergence_rms(const Tensor<double, 5>& tensor_field) {
-  cout << " >> calculate_divergence_rms" << endl;
+  // cout << " > > calculate_divergence_rms" << endl;
   // print_f_raw("tensor_field", tensor_field);
 
   Eigen::Tensor<std::complex<double>, 5> tensorfield_fourier = spectral.tensorfield->forward(tensor_field);
@@ -368,14 +368,14 @@ double MechBase::calculate_divergence_rms(const Tensor<double, 5>& tensor_field)
 
   // print_f_raw("tensor_field", tensor_field);
   // cout << "rms " << rms << endl;
-  cout << " << calculate_divergence_rms" << endl;
+  // cout << " < < calculate_divergence_rms" << endl;
   return rms;
 }
 
 void MechBase::gamma_convolution(TensorMap<Tensor<double, 5>> &field, Tensor<double, 2> &field_aim) {
 
   cout << "\n ... doing gamma convolution ..............................................." << endl;
-  cout << " >> gamma_convolution" << endl;
+  // cout << " > > gamma_convolution" << endl;
   // print_f_map_raw("field", field);
   // print_f_map_raw("spectral.tensorfield f", *spectral.tensorfield->field_fourier);
 
@@ -469,7 +469,7 @@ void MechBase::gamma_convolution(TensorMap<Tensor<double, 5>> &field, Tensor<dou
   // print_f_map_raw("spectral.tensorfield real", *spectral.tensorfield->field_real);
   // print_f_map_raw("gammaField", field);
 
-  cout << " << gamma_convolution" << endl;
+  // cout << " < < gamma_convolution" << endl;
 }
 
 Eigen::Tensor<double, 5> MechBase::calculate_rate(bool heterogeneous, 
@@ -477,7 +477,7 @@ Eigen::Tensor<double, 5> MechBase::calculate_rate(bool heterogeneous,
                                                   const Eigen::Tensor<double, 5>& field, 
                                                   double dt, 
                                                   const Eigen::Tensor<double, 2>& avRate) {
-  cout << " >> calculate rate" << endl;
+  // cout << " > > calculate rate" << endl;
   // cout << "heterogeneous " << heterogeneous << endl;
   // print_f_raw("field0", field0);
   // print_f_raw("field", field);
@@ -497,7 +497,7 @@ Eigen::Tensor<double, 5> MechBase::calculate_rate(bool heterogeneous,
     }
   }
   // print_f_raw("rate", rate);
-  cout << " << calculate rate" << endl;
+  // cout << " < < calculate rate" << endl;
 
   return rate;
 }

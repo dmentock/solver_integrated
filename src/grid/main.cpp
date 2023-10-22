@@ -44,9 +44,6 @@ int main(int argc, char *argv[])
   DiscretizationGrid grid_;
   grid_.init(false, config.vti_file);
   materialpoint_initDamask();
-
-
-
   // cout << "oke2" << endl;
 
   Spectral spectral;

@@ -251,13 +251,13 @@ module subroutine plastic_LpAndItsTangents(Lp, dLp_dS, dLp_dFi, &
     i, j
 
   print *, ">> plastic_LpAndItsTangents"
-  print *, "Lp1", Lp
+  ! print *, "Lp1", Lp
 
   if (mechanical_plasticity_type(ph) == MECHANICAL_PLASTICITY_NONE) then
     Lp      = 0.0_pREAL
     dLp_dFi = 0.0_pREAL
     dLp_dS  = 0.0_pREAL
-    print *, "Lp2", Lp
+    ! print *, "Lp2", Lp
 
   else
 
@@ -284,7 +284,7 @@ module subroutine plastic_LpAndItsTangents(Lp, dLp_dS, dLp_dFi, &
         call dislotungsten_LpAndItsTangent(Lp,dLp_dMp,Mp,ph,en)
 
     end select plasticType
-    print *, "Lp3", Lp
+    ! print *, "Lp3", Lp
 
     do i=1,3; do j=1,3
       dLp_dFi(i,j,1:3,1:3) = matmul(matmul(Fi,S),transpose(dLp_dMp(i,j,1:3,1:3))) + &
@@ -293,7 +293,7 @@ module subroutine plastic_LpAndItsTangents(Lp, dLp_dS, dLp_dFi, &
     end do; end do
 
   end if
-    print *, "Lp4", Lp
+    ! print *, "Lp4", Lp
 
   print *, "<< plastic_LpAndItsTangents"
 

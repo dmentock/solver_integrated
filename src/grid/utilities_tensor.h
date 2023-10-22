@@ -2,24 +2,33 @@
 #define UTILITIES_TENSOR_H
 
 #include <iostream>
+#include <iomanip>
 #include <vector>
 #include <Eigen/Core>
 #include <unsupported/Eigen/CXX11/Tensor>
 #include <iomanip> // Include this header for std::setw
 
+using namespace std;
+using namespace Eigen;
 
-template <typename TensorType>
-auto tensor_sum(const TensorType& tensor) -> typename TensorType::Scalar {
-  using T = typename TensorType::Scalar;
-  T sum = 0;
-  for (int i = 0; i < tensor.size(); ++i) {
-    sum += tensor.data()[i];
-  }
-  return sum;
+template <typename T, int rows, int cols>
+Matrix<T, rows, cols> as_matrix(const T& scalar) {
+    Matrix<T, rows, cols> mat(rows, cols);
+    mat.fill(static_cast<double>(scalar));
+    return mat;
 }
 
 template <typename T, int rows, int cols>
-Eigen::Matrix<T, rows, cols> _merge(
+Matrix<T, rows, cols> as_matrix(const Tensor<T, 2>& tensor) {
+    Matrix<T, rows, cols> mat(rows, cols);
+    for (int i = 0; i < rows; ++i)
+        for (int j = 0; j < cols; ++j)
+            mat(i, j) = tensor(i, j);
+    return mat;
+}
+
+template <typename T, int rows, int cols>
+Eigen::Matrix<T, rows, cols> merge(
     const Eigen::Matrix<T, rows, cols>& A,
     const Eigen::Matrix<T, rows, cols>& B,
     const Eigen::Matrix<bool, rows, cols>& mask)
@@ -27,7 +36,11 @@ Eigen::Matrix<T, rows, cols> _merge(
     Eigen::Matrix<T, rows, cols> result;
     for (int i = 0; i < rows; ++i) {
         for (int j = 0; j < cols; ++j) {
-            result(i, j) = mask(i, j) ? A(i, j) : B(i, j);
+            if (mask(i, j) == true) {
+              result(i, j) = A(i, j);
+            } else {
+              result(i, j) = B(i, j);
+            }
         }
     }
     return result;
@@ -40,7 +53,7 @@ Eigen::Matrix<T, rows, cols> merge(
     const Eigen::Matrix<bool, rows, cols>& mask)
 {
     Eigen::Matrix<T, rows, cols> B = Eigen::Matrix<T, rows, cols>::Constant(rows, cols, scalar);
-    return _merge(A, B, mask);
+    return merge(A, B, mask);
 }
 
 template <typename T, int rows, int cols>
@@ -50,7 +63,7 @@ Eigen::Matrix<T, rows, cols> merge(
     const Eigen::Matrix<bool, rows, cols>& mask)
 {
     Eigen::Matrix<T, rows, cols> A = Eigen::Matrix<T, rows, cols>::Constant(rows, cols, scalar);
-    return _merge(A, B, mask);
+    return merge(A, B, mask);
 }
 
 template <typename T, int rows, int cols>
@@ -61,7 +74,7 @@ Eigen::Matrix<T, rows, cols> merge(
 {
     Eigen::Matrix<T, rows, cols> B = Eigen::Matrix<T, rows, cols>::Constant(rows, cols, scalar);
     Eigen::Matrix<bool, rows, cols> mask = Eigen::Matrix<bool, rows, cols>::Constant(rows, cols, mask_values);
-    return _merge(A, B, mask);
+    return merge(A, B, mask);
 }
 
 template <typename T, int rows, int cols>
@@ -72,7 +85,88 @@ Eigen::Matrix<T, rows, cols> merge(
 {
     Eigen::Matrix<T, rows, cols> A = Eigen::Matrix<T, rows, cols>::Constant(rows, cols, scalar);
     Eigen::Matrix<bool, rows, cols> mask = Eigen::Matrix<bool, rows, cols>::Constant(rows, cols, mask_values);
-    return _merge(A, B, mask);
+    return merge(A, B, mask);
+}
+
+template <typename TensorType>
+auto tensor_sum(const TensorType& tensor) -> typename TensorType::Scalar {
+  using T = typename TensorType::Scalar;
+  T sum = 0;
+  for (int i = 0; i < tensor.size(); ++i) {
+    sum += tensor.data()[i];
+  }
+  return sum;
+}
+
+template <typename T, int Rank>
+void print_f(const std::string& label, const Tensor<T, Rank>& tensor) {
+    std::cout << " " << label << "   ";
+    int total_elements = tensor.size();
+    for (int linear_idx = 0; linear_idx < total_elements; ++linear_idx) {
+        double value = tensor.coeff(linear_idx);
+        int int_part = static_cast<int>(value);
+        int num_digits = 1;
+        while (int_part /= 10) ++num_digits;
+        
+        int precision = 18 - num_digits - 1;  // subtracting 1 for the dot
+        if (linear_idx > 0) {
+          if (value < 0) {
+              std::cout  << "       ";
+          } else {
+              std::cout  << "        ";
+          }
+        }
+        std::cout << std::setw(18) << std::fixed << std::setprecision(precision) << value;
+
+    }
+    std::cout << "     " << std::endl;
+}
+
+// Wrapper for Matrix
+template <typename T, int rows, int cols>
+void print_f(const std::string& label, const Matrix<T, rows, cols>& matrix) {
+    Tensor<T, 2> tensor(matrix.rows(), matrix.cols());
+    for (int i = 0; i < matrix.rows(); ++i)
+        for (int j = 0; j < matrix.cols(); ++j)
+            tensor(i, j) = matrix(i, j);
+    print_f(label, tensor);
+}
+
+// Wrapper for TensorMap (assuming Rank 2 for simplicity, can be templated further)
+template <typename T>
+void print_f(const std::string& label, const TensorMap<Tensor<T, 2>>& tensorMap) {
+    Tensor<T, 2> tensor = tensorMap;
+    print_f(label, tensor);
+}
+
+// Wrapper for Map (for Matrix)
+template <typename T, int rows, int cols>
+void print_f(const std::string& label, const Map<Matrix<T, rows, cols>>& map) {
+    Matrix<T, rows, cols> matrix = map;
+    print_f(label, matrix);
+}
+
+template<typename T, int Rank>
+void print_f_raw(const std::string& label, const Tensor<T, Rank>& tensor) {
+    std::cout << " " << label << "  ";
+    for (int i = 0; i < tensor.size(); ++i) {
+        // std::cout << std::fixed << std::setprecision(16) << tensor(i) << "        ";
+        std::cout << tensor(i) << "        ";
+    }
+    std::cout << std::endl;
+}
+
+// converts Matrix to Tensor
+template <typename T, int N>
+Tensor<T, 2> mat_to_tensor(Matrix<T, N, N> mat){
+    TensorMap<Tensor<T, 2>> tensor_map(mat.data(), N, N);
+    Tensor<T, 2> tensor = tensor_map;
+    return tensor;
+}
+
+template <typename Type>
+Eigen::Matrix<Type, Eigen::Dynamic, Eigen::Dynamic> tensor_to_mat(Eigen::Tensor<Type, 2>& tensor){
+  return Eigen::Map<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>>(tensor.data(), tensor.dimension(0), tensor.dimension(1));
 }
 
 // element-wise equality of two tensors
@@ -108,86 +202,6 @@ bool tensor_eq(const T1& tensor1, const T2& tensor2, double epsilon = 1e-8) {
     } else {
         return false;
     }
-}
-
-// print Eigen::Tensor in fortran order (colmajor)
-template <typename T, int Rank>
-void print_f(const std::string& label, const Eigen::Tensor<T, Rank>& tensor) {
-    std::cout << std::endl << "fortranstyle-printing tensor " << label << ", dims (";
-    for (int i = 0; i < tensor.dimensions().size(); ++i) {
-        std::cout << tensor.dimensions()[i];
-        if (i < tensor.dimensions().size() - 1) {
-            std::cout << ", ";
-        }
-    }
-    std::cout << ")" << std::endl;
-    std::array<int, Rank> index{};
-    int total_elements = tensor.size();
-    for (int linear_idx = 0; linear_idx < total_elements; ++linear_idx) {
-        int remainder = linear_idx;
-        for (int r = 0; r < Rank; ++r) {
-            index[r] = remainder % tensor.dimension(r);
-            remainder /= tensor.dimension(r);
-        }
-        std::cout << "Element ("; 
-        for (int r = 0; r < Rank; ++r) {
-            std::cout << index[r] + 1;  // Use 1-based indices like Fortran
-            if (r < Rank - 1) std::cout << ", ";
-        }
-        std::cout << std::setprecision(17) << "): " << tensor.coeff(linear_idx) << std::endl;
-    }
-}
-
-// print Eigen::TensorMap in fortran order (colmajor)
-template <typename T, int N>
-void print_f_map(const std::string& label, const Eigen::TensorMap<Eigen::Tensor<T, N>>& tensor_map) {
-  Eigen::Tensor<T, N> tensor = tensor_map;
-  print_f(label, tensor);
-}
-
-// produces same output as a fortran print *, statement
-// mainly used for generating nicely formatted c++ tensor with python helper
-// template <typename T, int Rank>
-// void print_f_raw(const std::string& label, const Eigen::Tensor<T, Rank>& tensor) {
-//   std::cout << label << "  ";
-//   for (int i = 0; i < tensor.dimensions().size(); ++i) {
-//     std::cout << tensor.dimensions()[i] << "        ";
-//   }
-//   std::cout << "vals:    ";
-//   for (int linear_idx = 0; linear_idx < tensor.size(); ++linear_idx) {
-//     std::cout << std::setprecision(17) << tensor.coeff(linear_idx) << "        ";
-//   }
-//   std::cout << std::endl;
-// }
-
-template<typename T, int Rank>
-void print_f_raw(const std::string& label, const Eigen::Tensor<T, Rank>& tensor) {
-    std::cout << " " << label << "  ";
-    for (int i = 0; i < tensor.size(); ++i) {
-        // std::cout << std::fixed << std::setprecision(16) << tensor(i) << "        ";
-        std::cout << tensor(i) << "        ";
-    }
-    std::cout << std::endl;
-}
-
-template <typename T, int N>
-void print_f_map_raw(const std::string& label, const Eigen::TensorMap<Eigen::Tensor<T, N>>& tensor_map) {
-  Eigen::Tensor<T, N> tensor = tensor_map;
-  print_f_raw(label, tensor);
-}
-
-// converts Eigen::Matrix to Eigen::Tensor
-template <typename T, int N>
-Eigen::Tensor<T, 2> mat_to_tensor(Eigen::Matrix<T, N, N> mat){
-    Eigen::TensorMap<Eigen::Tensor<T, 2>> tensor_map(mat.data(), N, N);
-    Eigen::Tensor<T, 2> tensor = tensor_map;
-    return tensor;
-}
-
-// converts Eigen::Tensor to Eigen::Matrix
-template <typename Type>
-Eigen::Matrix<Type, Eigen::Dynamic, Eigen::Dynamic> tensor_to_mat(Eigen::Tensor<Type, 2>& tensor){
-  return Eigen::Map<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>>(tensor.data(), tensor.dimension(0), tensor.dimension(1));
 }
 
 #endif // UTILITIES_TENSOR_H

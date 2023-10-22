@@ -217,7 +217,6 @@ TEST_F(GridTestSetup, MechBaseTestForwardField) {
   });
 
   Matrix<double, 3, 3> aim;
-  aim.resize(3,3);
   aim << 1.001,  0   ,  0,
          0    ,  1   ,  0,
          0    ,  0   ,  1;

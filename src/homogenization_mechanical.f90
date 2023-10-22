@@ -136,17 +136,17 @@ module subroutine mechanical_homogenize(Delta_t,ce)
   integer :: co
   real(pREAL), dimension(3,3) :: P
   print *, ">> mechanical_homogenize"
-  print *, "ce", ce
+  ! print *, "ce", ce
   ! P = phase_P(1,ce)
-  print*, "papi"
+  ! print*, "papi"
   ! print*, "phase_P", P
-  print*, "material_v",material_v(1,ce)
+  ! print*, "material_v",material_v(1,ce)
     ! print *, "phase_P", phase_P(1,ce)
     ! print *, "material_v", material_v(1,ce)
   homogenization_P(1:3,1:3,ce)            = phase_P(1,ce)*material_v(1,ce)
   homogenization_dPdF(1:3,1:3,1:3,1:3,ce) = phase_mechanical_dPdF(Delta_t,1,ce)*material_v(1,ce)
   do co = 2, homogenization_Nconstituents(material_ID_homogenization(ce))
-    print *, "coco"
+    ! print *, "coco"
     homogenization_P(1:3,1:3,ce)            = homogenization_P(1:3,1:3,ce) &
                                             + phase_P(co,ce)*material_v(co,ce)
     homogenization_dPdF(1:3,1:3,1:3,1:3,ce) = homogenization_dPdF(1:3,1:3,1:3,1:3,ce) &

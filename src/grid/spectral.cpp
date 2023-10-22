@@ -126,7 +126,7 @@ Tensor<double, 5> Spectral::constitutive_response(Tensor<double, 2> &P_av,
                                                   int rank, 
                                                   std::optional<Eigen::Quaterniond> rot_bc_q) {
 
-  cout << " >> constitutive_response" << endl;
+  // cout << " > > constitutive_response" << endl;
   std::cout << "\n ... evaluating constitutive response ......................................" << std::endl;
 
   int n_cells = F.dimension(2) * F.dimension(3) * F.dimension(4);
@@ -209,7 +209,7 @@ Tensor<double, 5> Spectral::constitutive_response(Tensor<double, 2> &P_av,
   C_volAvg = C_volAvg * wgt;
 
   // print_f_raw("P", P);
-  cout << " << constitutive_response" << endl;
+  // cout << " < < constitutive_response" << endl;
   return P;
 }
 

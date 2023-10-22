@@ -1,2 +1,0 @@
-/usr/bin/ar qc libmech_base.a CMakeFiles/mech_base.dir/mech_base.cpp.o
-/usr/bin/ranlib libmech_base.a

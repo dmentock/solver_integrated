@@ -21,7 +21,7 @@ void DamaskGrid::forward_fields(Config::LoadStep& load_step,
                                 bool& cut_back, bool& guess, 
                                 double& delta_t, double& delta_t_prev, double& t_remaining) {
   if (fields.mech) {
-    cout << " >> forward_fields" << endl;
+    // cout << " > > forward_fields" << endl;
     cout << " guess " << guess << endl;
     fields.mech->forward (cut_back, guess, delta_t, delta_t_prev, t_remaining, 
                           load_step.deformation, load_step.stress, load_step.rot_bc_q);

@@ -1,2 +1,0 @@
-/usr/bin/ar qc libdamask_grid_lib.a CMakeFiles/damask_grid_lib.dir/damask_grid.cpp.o
-/usr/bin/ranlib libdamask_grid_lib.a

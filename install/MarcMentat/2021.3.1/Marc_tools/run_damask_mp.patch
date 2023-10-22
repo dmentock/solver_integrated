@@ -168,9 +168,9 @@
 @@ -1546,8 +1531,6 @@ GPGPU option         : $gpuids
  Host file name       : $host" > $jid.log
  if test "$iprintsimufact" = true ; then
-  echo "DDM with ARC Mapper  : $ddm_arc" >> $jid.log
-- echo "Mapper directory     : $MESHERDIR" >> $jid.log
-- echo "Meshing directory    : $MESHERDIR" >> $jid.log
+  echo "DDM with ARC Mapper  : $ddm_arc" > > $jid.log
+- echo "Mapper directory     : $MESHERDIR" > > $jid.log
+- echo "Meshing directory    : $MESHERDIR" > > $jid.log
  fi
  echo \
  "Message passing type : $itree
@@ -187,8 +187,8 @@
  Solver threads       : $ntsprint"
  if test "$iprintsimufact" = true ; then
   echo "DDM with ARC Mapper  : $ddm_arc"
-+ echo "Mapper directory     : $MESHERDIR" >> $jid.log
-+ echo "Meshing directory    : $MESHERDIR" >> $jid.log
++ echo "Mapper directory     : $MESHERDIR" > > $jid.log
++ echo "Meshing directory    : $MESHERDIR" > > $jid.log
  fi
  echo \
  "GPGPU option         : $gpuids
